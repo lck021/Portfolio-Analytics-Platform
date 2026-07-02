@@ -4,13 +4,17 @@ import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import login_required, error, db_connect
+from helpers import *
+from api import *
 
 # Configure application
 app = Flask(__name__)
 
 # Configure cookies
 app.config["SECRET_KEY"] = "abcde"
+
+# Custom filter
+app.jinja_env.filters["sgd"] = sgd
 
 # Prevents app from caching and returning old information
 @app.after_request
@@ -25,7 +29,54 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    return render_template('index.html')
+    """Show portfolio value"""
+
+    user_id = session['user_id']
+    cursor, connection = db_connect()
+
+    try:
+        # returns a list containing dictionaries with symbol and total_share fields
+        portfolio = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
+        
+        current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
+        total = current_cash
+
+        for stock in portfolio: # adds cash from each stock into total, 'stock' is a dictionary
+            current_price = get_quote(stock['symbol'])["current_price"]
+            total += round(stock['total_shares'] * current_price, 2)
+        
+        return render_template('dashboard.html', total_value=total)
+    
+    finally:
+        connection.close()
+
+
+@app.route('/breakdown')
+@login_required
+def breakdown():
+    """Displays portfolio breakdown"""
+
+    user_id = session['user_id']
+    cursor, connection = db_connect()
+
+    try:
+        # returns a list containing dictionaries with symbol and total_share fields
+        portfolio = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
+        
+        current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
+        total = current_cash
+
+        for stock in portfolio: # adds cash from each stock into total, 'stock' is a dictionary
+            current_price = get_quote(stock['symbol'])["current_price"]
+            stock['price'] = current_price
+            stock['total'] = round(stock['total_shares'] * current_price, 2)
+            total += stock['total']
+        
+        return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total)
+    
+    finally:
+        connection.close()
+
 
 
 @app.route("/login", methods=["GET", "POST"])

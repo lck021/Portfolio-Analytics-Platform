@@ -3,6 +3,7 @@ import sqlite3
 
 from flask import redirect, render_template, render_template_string, request, session
 
+
 def login_required(func) -> None:
     """Directs user to login if they have not, else process the request"""
 
@@ -14,11 +15,20 @@ def login_required(func) -> None:
     
     return decorated_function
 
+
 def error(code, title, message):
+    """Returns custom error message"""
     return render_template('error.html', code=code, title=title, message=message)
 
+
 def db_connect():
+    """Connects to sqlite database"""
     connection = sqlite3.connect("platform.db")
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
     return cursor, connection
+
+
+def sgd(value):
+    """Format value as SGD."""
+    return f"${value:,.2f}"
