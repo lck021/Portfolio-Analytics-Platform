@@ -61,8 +61,9 @@ def breakdown():
 
     try:
         # returns a list containing dictionaries with symbol and total_share fields
-        portfolio = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
-        
+        data = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
+        portfolio = [dict(stock) for stock in data]
+
         current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
         total = current_cash
 
@@ -76,6 +77,62 @@ def breakdown():
     
     finally:
         connection.close()
+
+
+@app.route("/buy", methods=["GET", "POST"])
+@login_required
+def buy():
+    """Buy shares of stock"""
+
+    cursor, connection = db_connect()
+
+    try: 
+        if request.method == 'POST': # if the user is trying to buy shares
+            symbol = request.form.get('symbol').upper()
+
+            if not symbol: # if symbol field is empty
+                return error(400, "Bad Request", "Please provide a symbol.")
+
+            data = get_quote(symbol)
+
+            if data is None: # if symbol does not exist
+                return error(400, "Bad Request", "Please provide a valid symbol.")
+            
+            shares = request.form.get('shares') # amount of shares user wants to buy
+
+            if not shares.isdigit():
+                return error(400, "Bad Request", "Please provide a valid number of shares.")
+
+            shares = int(shares) 
+
+            if shares <= 0:
+                return error(400, "Bad Request", "Please provide a positive number of shares.")
+            
+            user_id = session['user_id']
+            cash_needed = data["current_price"] * shares
+            current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
+            
+            if cash_needed > current_cash: # check if user has sufficient cash
+                return error(400, "Bad Request", "Insufficient cash.")
+            
+            # adds to database if transaction is valid
+            cursor.execute("insert into transactions(user_id, symbol, shares, price) values(?, ?, ?, ?)", 
+                            (session['user_id'], symbol, shares, data["current_price"]))
+            connection.commit()
+
+            current_cash -= cash_needed
+            cursor.execute("update users set cash=? where id=?", (current_cash, user_id))
+            connection.commit()
+
+            flash(f"Successfully bought {shares} {'share' if shares == 1 else 'shares'} of {symbol}!", "success")
+            return redirect('/') # returns user to homepage 
+        
+        else: # if user got through the navbar
+            return render_template('buy.html')
+        
+    finally: 
+        connection.close()
+
 
 
 

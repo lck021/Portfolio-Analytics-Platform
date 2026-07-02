@@ -29,7 +29,8 @@
                     <a class="nav-link" href="/breakdown">Breakdown</a>
                     <a class="nav-link" href="#">Calculator</a>
                     <a class="nav-link" href="#">Statistics</a>
-                    <a class="nav-link" href="#">Transactions</a>
+                    <a class="nav-link" href="/buy">Buy</a>
+                    <a class="nav-link" href="/sell">Sell</a>
                     <a class="nav-link" href="#">History</a>
                 </div>
                 <div class="navbar-nav ms-auto">
@@ -44,6 +45,15 @@
             </div>
         </div>
     </nav>
+
+    {% if get_flashed_messages(with_categories=true) %}
+    <header>
+        <div class="alert alert-success alert-dismissable fade show mb-0 text-center" role="alert">
+            {{ get_flashed_messages() | join(" ") }}
+        </div>
+    </header>
+    {% endif %}
+
     <main class="container pt-5">
         {% block main %} {% endblock %}
     </main>
