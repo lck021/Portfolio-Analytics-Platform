@@ -1,6 +1,7 @@
 import os
 
 import sqlite3
+from xmlrpc.client import _Method
 from flask import Flask, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -133,6 +134,93 @@ def buy():
     finally: 
         connection.close()
 
+
+@app.route("/sell", methods=["GET", "POST"])
+@login_required
+def sell():
+    """Sell shares of stock"""
+
+    cursor, connection = db_connect()
+    user_id = session['user_id']
+
+    try:
+        if request.method == 'POST':  # if the user is trying to buy shares
+            symbol = request.form.get('symbol').upper()
+
+            if not symbol:  # if symbol field is empty
+                return error(400, "Bad Request", "Symbol field is empty.")
+
+            total_share = cursor.execute("select sum(shares) as total_share from transactions where user_id=? and symbol=?", (user_id, symbol)).fetchone()["total_share"]
+            if total_share <= 0:  # if user somehow does not own any shares of the selected stock
+                return error(400, "Bad Request", f"No shares of {symbol} owned.")
+
+            price = get_quote(symbol)['current_price'] # current price of stock
+            shares = request.form.get('shares')  # amount of shares user wants to sell
+
+            if not shares.isdigit():
+                return error(400, "Bad Request", "Amount of shares must be a whole integer.")
+
+            shares = int(shares)
+
+            if total_share < shares:
+                return error(400, "Bad Request", "You cannot sell more shares than you own.")
+
+            cash_gained = price * shares
+            current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()['cash']
+
+            # adds to database if transaction is valid
+            cursor.execute("insert into transactions(user_id, symbol, shares, price) values(?, ?, ?, ?)", (user_id, symbol, -1 * shares, price))
+            connection.commit()
+            current_cash += cash_gained
+            cursor.execute("update users set cash=? where id=?", (current_cash, user_id))
+            connection.commit()
+
+            flash(f"Successfully sold {shares} {'share' if shares == 1 else 'shares'} of {symbol}!", "success")
+            return redirect('/')  # returns user to homepage
+
+        else:  # if user got through the navbar
+            # returns a list containing dictionaries with symbol field that are distinct
+            portfolio = cursor.execute("select distinct symbol from transactions where user_id=?", (user_id,)).fetchall()
+            return render_template('sell.html', portfolio=portfolio)
+    
+    finally:
+        connection.close()
+
+
+@app.route("/cash", methods=["GET", "POST"])
+@login_required
+def add_cash():
+    """Allows user to add cash to their account"""
+
+    cursor, connection = db_connect()
+    user_id = session['user_id']
+
+    try:
+        if request.method == "POST": # if user submitted through html form
+            current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()['cash']
+
+            add_amount = request.form.get("add_amount")
+
+            if not add_amount:
+                return error(400, "Bad Request", "Cash field is empty.")
+            
+            if not add_amount.isdigit():
+                    return error(400, "Bad Request", "Amount of cash must be a whole integer.")
+            
+            add_amount = int(add_amount)
+            current_cash += add_amount
+            cursor.execute("update users set cash=? where id=?", (current_cash, user_id))
+            connection.commit()
+
+            flash(f"Successfully added ${add_amount} cash!", "success")
+            return redirect('/')
+        
+        else: # if user got through navbar
+            current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()['cash']
+            return render_template('cash.html', current_cash=current_cash)
+
+    finally:
+        connection.close()
 
 
 
