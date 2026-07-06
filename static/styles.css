@@ -3,6 +3,16 @@ body {
     color: white;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    padding-top: 20px;
+}
+
 .navbar {
     background-color: #1e1e1e;
+}
+
+.chart {
+    width: 600px; 
+    height: 600px; 
+    margin: 50px auto;
 }

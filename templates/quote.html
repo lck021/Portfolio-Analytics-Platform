@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Request Quote
+{% endblock %}
+
+{% block main %}
+    <div class="text-center">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="symbol" name="symbol" placeholder="Stock Symbol" type="text">
+        </div>
+        <div id="current-price"></div>
+        <div id="change"></div>
+        <div id="percent-change"></div>
+        <div id="high"></div>
+        <div id="low"></div>
+        <div id="open"></div>
+        <div id="previous-close"></div>
+    </div>
+
+    <script>
+        const symbol_input = document.getElementById("symbol");
+
+        symbol_input.addEventListener("change", async function () {
+            const symbol = symbol_input.value;
+
+            if (symbol.length == 0) {
+                return;
+            }
+
+            const response = await fetch(`/api/quote?symbol=${symbol}`);
+            const data = await response.json()
+
+            document.getElementById("current-price").textContent = `Current Price: $${data.current_price}`
+            document.getElementById("change").textContent = `Change: $${data.change}`
+            document.getElementById("percent-change").textContent = `Percent Change: ${data.percent_change}%`
+            document.getElementById("high").textContent = `High: $${data.high}`
+            document.getElementById("low").textContent = `Low: $${data.low}`
+            document.getElementById("open").textContent = `Open: $${data.open}`
+            document.getElementById("previous-close").textContent = `Previous Closing: $${data.previous_close}`
+        })
+    </script>
+{% endblock %}

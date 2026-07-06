@@ -2,7 +2,7 @@ import os
 
 import sqlite3
 from xmlrpc.client import _Method
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import *
@@ -64,20 +64,52 @@ def breakdown():
         # returns a list containing dictionaries with symbol and total_share fields
         data = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
         portfolio = [dict(stock) for stock in data]
+        chart_data = []
 
         current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
         total = current_cash
+        other_label = []
+        other_value = 0
 
         for stock in portfolio: # adds cash from each stock into total, 'stock' is a dictionary
             current_price = get_quote(stock['symbol'])["current_price"]
-            stock['price'] = current_price
+            stock['price'] = int(current_price)
             stock['total'] = round(stock['total_shares'] * current_price, 2)
             total += stock['total']
+
+        for stock in portfolio: # combines smaller stocks into an 'others' category
+            percentage = stock['total'] / total * 100
+
+            if percentage < 5.0:
+                other_label.append(stock['symbol'])
+                other_value += stock['total']
+            
+            else:
+                chart_data.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
+
+        chart_data.append({"symbol" : "Cash", "total": current_cash})
+        chart_data.append({"symbol": f"Others: {' '.join(other_label)}", "total": other_value})
         
-        return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total)
+        return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total, chart_data=chart_data)
     
     finally:
         connection.close()
+
+
+@app.route("/quote", methods=["GET", "POST"])
+@login_required
+def render_quote_page():
+    return render_template('quote.html')
+
+
+@app.route("/api/quote")
+@login_required
+def get_quote_html():
+    symbol = request.args.get("symbol").upper()
+
+    data = get_quote(symbol)
+
+    return jsonify(data)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -223,6 +255,32 @@ def add_cash():
         connection.close()
 
 
+@app.route("/history")
+@login_required
+def history():
+    """Displays transaction history"""
+
+    cursor, connection = db_connect()
+
+    try:
+        user_id = session['user_id']
+
+        # returns a list containing dictionaries with symbol, shares, price, and time fields
+        data = cursor.execute("select symbol, shares, price, time from transactions where user_id=? order by time desc", (user_id,)).fetchall()
+        portfolio = [dict(stock) for stock in data]
+
+        for stock in portfolio:  # adds cash from each stock into total, 'stock' is a dictionary
+            if stock['shares'] > 0:
+                stock['type'] = "BUY"
+            else:
+                stock['type'] = "SELL"
+
+        return render_template('history.html', portfolio=portfolio)
+    
+    finally:
+        connection.close()
+
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -304,4 +362,3 @@ def register():
         
     finally:
         connection.close()
-

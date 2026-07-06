@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Transaction History
+{% endblock %}
+
+{% block main %}
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th class="text-start"><strong>Symbol</strong></th>
+                <th class="text-end"><strong>Shares</strong></th>
+                <th class="text-end"><strong>Price</strong></th>
+                <th class="text-end"><strong>Type</strong></th>
+                <th class="text-end"><strong>Timestamp-Newest to Oldest</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in portfolio %}
+            <tr>
+                <td class="text-start">{{ stock['symbol'] }}</td>
+                <td class="text-end">{{ stock['shares'] }}</td>
+                <td class="text-end">{{ stock['price'] | sgd }}</td>
+                <td class="text-end">{{ stock['type'] }}</td>
+                <td class="text-end">{{ stock['time'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

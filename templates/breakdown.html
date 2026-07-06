@@ -35,4 +35,72 @@
             </tr>
         </tbody>
     </table>
+
+    <div class="chart">
+        <canvas id="stock-breakdown-pie"></canvas>
+    </div>
+
+    <script id="chart-data" type="application/json">
+        {{ chart_data | tojson }}
+    </script>
+
+    <script>
+        const chartData = JSON.parse(document.getElementById("chart-data").textContent)
+
+        const labels = chartData.map(stock => stock.symbol)
+        const values = chartData.map(stock => Number(stock.total))
+        const backgroundColors = labels.map((_, i) => {
+            const hue = (i * 137.508) % 360;   // Golden angle
+            return `hsl(${hue}, 65%, 55%)`;
+        });
+
+        new Chart(document.getElementById("stock-breakdown-pie"), {
+            type: 'pie',
+            data: {
+                labels: labels, 
+                datasets: [{
+                    label: "Value",
+                    data:values,
+                    backgroundColor: backgroundColors,
+                    borderColor: "black",
+                    borderWidth: 2, 
+                    hoverOffset: 10,
+                }]
+            }, 
+            options: {
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: "white", 
+                            font: {
+                                size: 18, 
+                                weight: "bold"
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Stock Breakdown', 
+                        color: "white", 
+                        font: {
+                            size: 24
+                        }
+                    }, 
+                    tooltip: {
+                        callbacks: {
+                        label: function(context) {
+                            const total = values.reduce((a, b) => a + b, 0)
+                            const percentage = ((context.raw / total) * 100).toFixed(2)
+
+                            return `${context.label}: $${context.raw.toLocaleString()} (${percentage}%)`
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    </script>
 {% endblock %}
