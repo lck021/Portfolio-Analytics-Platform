@@ -6,12 +6,28 @@
 
 {% block main %}
     <form class="text-center" action="/buy" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="symbol" placeholder="Stock Symbol" type="text">
+        <div class="container">
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Stock Symbol:</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="symbol" placeholder="e.g. AAPL">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Shares:</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="shares" placeholder="e.g. 10">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <button class="btn btn-primary mx-auto w-auto" type="submit">Buy</button>
+            </div>
         </div>
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="shares" placeholder="Number" type="text">
-        </div>
-        <button class="btn btn-primary mx-auto w-auto" type="submit">Buy</button>
     </form>
 {% endblock %}

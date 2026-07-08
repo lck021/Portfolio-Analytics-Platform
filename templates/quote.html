@@ -5,23 +5,88 @@
 {% endblock %}
 
 {% block main %}
-    <div class="text-center">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="symbol" name="symbol" placeholder="Stock Symbol" type="text">
+    <div class="container">
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Stock Symbol:</label>
+            </div>
+            <div class="col-4">
+                <div class="d-flex gap-2">
+                    <input class="form-control" id="symbol" name="symbol" placeholder="e.g. AAPL">
+                    <button id="get-quote" class="btn btn-primary">Quote</button>
+                </div>
+            </div>
         </div>
-        <div id="current-price"></div>
-        <div id="change"></div>
-        <div id="percent-change"></div>
-        <div id="high"></div>
-        <div id="low"></div>
-        <div id="open"></div>
-        <div id="previous-close"></div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Current Price:</label>
+            </div>
+            <div class="col-4">
+                <div id="current-price"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Change:</label>
+            </div>
+            <div class="col-4">
+                <div id="change"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Percent Change:</label>
+            </div>
+            <div class="col-4">
+                <div id="percent-change"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>High:</label>
+            </div>
+            <div class="col-4">
+                <div id="high"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Low:</label>
+            </div>
+            <div class="col-4">
+                <div id="low"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Open:</label>
+            </div>
+            <div class="col-4">
+                <div id="open"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-3 align-items-center">
+            <div class="col-3 text-end">
+                <label>Previous Closing:</label>
+            </div>
+            <div class="col-4">
+                <div id="previous-close"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const symbol_input = document.getElementById("symbol");
+        const button = document.getElementById("get-quote");
+        const symbol_input = document.getElementById("symbol")
 
-        symbol_input.addEventListener("change", async function () {
+        button.addEventListener("click", async function () {
             const symbol = symbol_input.value;
 
             if (symbol.length == 0) {
@@ -31,13 +96,15 @@
             const response = await fetch(`/api/quote?symbol=${symbol}`);
             const data = await response.json()
 
-            document.getElementById("current-price").textContent = `Current Price: $${data.current_price}`
-            document.getElementById("change").textContent = `Change: $${data.change}`
-            document.getElementById("percent-change").textContent = `Percent Change: ${data.percent_change}%`
-            document.getElementById("high").textContent = `High: $${data.high}`
-            document.getElementById("low").textContent = `Low: $${data.low}`
-            document.getElementById("open").textContent = `Open: $${data.open}`
-            document.getElementById("previous-close").textContent = `Previous Closing: $${data.previous_close}`
+            const sign = data.change > 0 ? "+" : data.change < 0 ? "-" : ""
+
+            document.getElementById("current-price").textContent = `$${data.current_price}`
+            document.getElementById("change").textContent = `${sign}$${Math.abs(data.change)}`
+            document.getElementById("percent-change").textContent = `${data.percent_change}%`
+            document.getElementById("high").textContent = `${data.high}`
+            document.getElementById("low").textContent = `${data.low}`
+            document.getElementById("open").textContent = `${data.open}`
+            document.getElementById("previous-close").textContent = `${data.previous_close}`
         })
     </script>
 {% endblock %}

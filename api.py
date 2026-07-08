@@ -22,11 +22,11 @@ def get_quote(symbol:str):
 
     return {
         "symbol": symbol, 
-        "current_price": data["c"], 
-        "change": data["d"],
-        "percent_change": data["dp"],
-        "high": data["h"],
-        "low": data["l"],
-        "open": data["o"],
-        "previous_close": data["pc"]
+        "current_price": data['c'], 
+        "change": data['d'],
+        "percent_change": data['dp'],
+        "high": data['h'],
+        "low": data['l'],
+        "open": data['o'],
+        "previous_close": data['pc']
     }

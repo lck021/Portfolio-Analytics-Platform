@@ -6,15 +6,37 @@
 
 {% block main %}
     <form class="text-center" action="/register" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text">
+        <div class="container">
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Username:</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="username" placeholder="Enter username">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Password:</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="password" placeholder="Enter password" type="password">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Confirm Password:</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="confirmation" placeholder="Enter password again" type="password">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <button class="btn btn-primary mx-auto w-auto" type="submit">Register</button>
+            </div>
         </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" name="confirmation" placeholder="Confirm Password" type="password">
-        </div>
-        <button class="btn btn-primary mx-auto w-auto" type="submit">Register</button>
     </form>
 {% endblock %}
