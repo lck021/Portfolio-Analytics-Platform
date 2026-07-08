@@ -2,6 +2,7 @@ from functools import wraps
 import sqlite3
 
 from flask import redirect, render_template, render_template_string, request, session
+from api import *
 
 
 def login_required(func) -> None:
@@ -18,11 +19,13 @@ def login_required(func) -> None:
 
 def error(code, title, message):
     """Returns custom error message"""
+
     return render_template('error.html', code=code, title=title, message=message)
 
 
 def db_connect():
     """Connects to sqlite database"""
+
     connection = sqlite3.connect("platform.db")
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
@@ -31,4 +34,29 @@ def db_connect():
 
 def sgd(value):
     """Format value as SGD."""
+
     return f"${value:,.2f}"
+
+
+def calculate_portfolio_value(user_id):
+    """Returns a list of dictionaries containing each stock symbol, shares, price, total and the overall portfolio sum as a tuple"""
+
+    cursor, connection = db_connect()
+
+    try:
+        data = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
+        portfolio = [dict(stock) for stock in data]
+
+        current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
+        total = current_cash
+
+        for stock in portfolio: # adds cash from each stock into total, 'stock' is a dictionary
+            current_price = get_quote(stock['symbol'])["current_price"]
+            stock['price'] = current_price
+            stock['total'] = round(stock['total_shares'] * current_price, 2)
+            total += stock['total']
+        
+        return portfolio, total
+
+    finally:
+        connection.close()

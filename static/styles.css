@@ -4,7 +4,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    padding-top: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .navbar {
@@ -12,7 +13,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .chart {
-    width: 600px; 
-    height: 600px; 
+    width: 800px;
+    aspect-ratio: 16 / 9;
     margin: 50px auto;
 }

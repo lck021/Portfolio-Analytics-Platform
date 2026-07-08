@@ -1,7 +1,7 @@
 import os
 
 import sqlite3
-from xmlrpc.client import _Method
+import math
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -59,23 +59,14 @@ def breakdown():
 
     user_id = session['user_id']
     cursor, connection = db_connect()
+    current_cash = cursor.execute("select cash from users where id=?", (session["user_id"],)).fetchone()["cash"]
 
     try:
         # returns a list containing dictionaries with symbol and total_share fields
-        data = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
-        portfolio = [dict(stock) for stock in data]
+        portfolio, total = calculate_portfolio_value(user_id)
         chart_data = []
-
-        current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
-        total = current_cash
         other_label = []
         other_value = 0
-
-        for stock in portfolio: # adds cash from each stock into total, 'stock' is a dictionary
-            current_price = get_quote(stock['symbol'])["current_price"]
-            stock['price'] = int(current_price)
-            stock['total'] = round(stock['total_shares'] * current_price, 2)
-            total += stock['total']
 
         for stock in portfolio: # combines smaller stocks into an 'others' category
             percentage = stock['total'] / total * 100
@@ -88,7 +79,7 @@ def breakdown():
                 chart_data.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
 
         chart_data.append({"symbol" : "Cash", "total": current_cash})
-        chart_data.append({"symbol": f"Others: {' '.join(other_label)}", "total": other_value})
+        chart_data.append({"symbol": f"Others - {' '.join(other_label)}", "total": other_value})
         
         return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total, chart_data=chart_data)
     
@@ -96,15 +87,82 @@ def breakdown():
         connection.close()
 
 
+@app.route("/sizing", methods=["GET", "POST"])
+@login_required
+def sizing():
+    """Calculate position sizing"""
+
+    cursor, connection = db_connect()
+    user_id = session["user_id"]
+    portfolio, total = calculate_portfolio_value(user_id)
+
+    try:
+        if request.method == "POST": # if user submitted for calculation
+            # getting raw data for calculation
+
+            risk_per_trade = request.form.get("risk_per_trade")
+            entry_price = request.form.get("entry_price")
+            stop_loss = request.form.get("stop_loss")
+
+            if not risk_per_trade.replace(".", "", 1).isdigit() or not entry_price.replace(".", "", 1).isdigit() or not stop_loss.replace(".", "", 1).isdigit():
+                return error(400, "Bad Request", "Please provide valid inputs.")
+
+            risk_per_trade = float(risk_per_trade)
+            entry_price = float(entry_price)
+            stop_loss = float(stop_loss)
+
+            if risk_per_trade <= 0 or entry_price <= 0 or stop_loss <= 0:
+                return error(400, "Bad Request", "Please provide positive inputs.")
+            
+            if entry_price == stop_loss or stop_loss > entry_price:
+                return error(400, "Bad Request", "Entry price and stop loss do not tally.")
+            
+            symbol = request.form.get('symbol').upper()
+
+            if not symbol: # if symbol field is empty
+                return error(400, "Bad Request", "Please provide a symbol.")
+            
+            data = get_quote(symbol)
+
+            if data is None:
+                return error(400, "Bad Request", "Please provide a valid symbol.")
+            
+            # doing calculation
+
+            risk_per_share = entry_price - stop_loss
+            max_dollar_risk = risk_per_trade / 100 * total
+            recommended_size = math.floor(max_dollar_risk / risk_per_share)
+            capital_required = recommended_size * entry_price
+            portfolio_allocation = round(capital_required / total * 100, 2)
+
+            return render_template("sizing_calc.html", 
+                                   risk_per_share=risk_per_share, 
+                                   max_dollar_risk=max_dollar_risk, 
+                                   recommended_size=recommended_size, 
+                                   capital_required = capital_required, 
+                                   portfolio_allocation = portfolio_allocation)
+
+        
+        else: # if user tapped on navbar
+            return render_template("sizing.html", total=total)
+    
+    finally:
+        connection.close()
+
+
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
-def render_quote_page():
+def quote():
+    """Quote stock price and other details"""
+
     return render_template('quote.html')
 
 
 @app.route("/api/quote")
 @login_required
 def get_quote_html():
+    """Returns stock quote when queried from html page"""
+
     symbol = request.args.get("symbol").upper()
 
     data = get_quote(symbol)
@@ -236,7 +294,7 @@ def add_cash():
             if not add_amount:
                 return error(400, "Bad Request", "Cash field is empty.")
             
-            if not add_amount.isdigit():
+            if not add_amount.replace(".", "", 1).isdigit():
                     return error(400, "Bad Request", "Amount of cash must be a whole integer.")
             
             add_amount = int(add_amount)

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Sizing Calculator
+{% endblock %}
+
+{% block main %}
+    <div class="mb-3 text-center">
+        <p>Risk Per Share: {{ risk_per_share | sgd }}</p>
+        <p>Maximum Dollar Risk: {{ max_dollar_risk | sgd }}</p>
+        <p>Recommended Size: {{ recommend_size }} {{ "share" if recommended_size == 1 else "shares" }}</p>
+        <p>Capital Required : {{ capital_required | sgd }}</p>
+        <p>Portfolio Allocation: {{ portfolio_allocation }}%</p>
+    </div>
+{% endblock %}

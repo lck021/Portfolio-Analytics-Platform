@@ -51,9 +51,10 @@
         const values = chartData.map(stock => Number(stock.total))
         const backgroundColors = labels.map((_, i) => {
             const hue = (i * 137.508) % 360;   // Golden angle
-            return `hsl(${hue}, 65%, 55%)`;
+            return `hsl(${hue}, 80%, 55%)`;
         });
 
+        Chart.register(ChartDataLabels)
         new Chart(document.getElementById("stock-breakdown-pie"), {
             type: 'pie',
             data: {
@@ -87,8 +88,28 @@
                         color: "white", 
                         font: {
                             size: 24
+                        }, 
+                        padding: {
+                            top: 10, 
+                            bottom: 60,
                         }
                     }, 
+                    datalabels: {
+                        color: "white",
+                        anchor: "end", 
+                        align: "end", 
+                        offset: 10,
+                        font: {
+                            weight: "bold", 
+                            size: 16,
+                        }, 
+                        formatter: function(value, context) {
+                            const total = values.reduce((a, b) => a + b, 0)
+                            const percentage = ((value / total) * 100).toFixed(2)
+
+                            return `${percentage}%`
+                        }, 
+                    },
                     tooltip: {
                         callbacks: {
                         label: function(context) {

@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Calculate Sizing
+{% endblock %}
+
+{% block main %}
+    <h3> Current Portfolio Value: {{ total | sgd }}</h3>
+    <form action="/sizing" method="post">
+        <div class="container">
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Risk Per Trade (%):</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="risk_per_trade" placeholder="e.g. 1.5">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Stock Symbol:</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="symbol" placeholder="e.g. AAPL">
+                </div>
+            </div>
+            
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <span>Current Price : </span>
+                </div>
+                <div class="col-4">
+                    <p id="current-price"></p>
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Entry Price ($):</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="entry_price" placeholder="e.g. 200">
+                </div>
+            </div>
+
+            <div class="row justify-content-center mb-3 align-items-center">
+                <div class="col-3 text-end">
+                    <label>Stop Loss ($):</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" name="stop_loss" placeholder="e.g. 190">
+                </div>
+            </div>
+            <div class="row justify-content-center mb-3 align-items-center">
+                <button class="btn btn-primary mx-auto w-auto" type="submit">Calculate</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        const symbol_input = document.getElementById("symbol");
+
+        symbol_input.addEventListener("change", async function () {
+            const symbol = symbol_input.value;
+
+            if (symbol.length == 0) {
+                return;
+            }
+
+            const response = await fetch(`/api/quote?symbol=${symbol}`);
+            const data = await response.json()
+
+            document.getElementById("current-price").textContent = `Current Price: $${data.current_price}`
+        })
+    </script>
+{% endblock %}
