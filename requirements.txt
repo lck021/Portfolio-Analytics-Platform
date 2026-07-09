@@ -1,3 +1,4 @@
 Flask
 finnhub-python
 gunicorn
+python-dotenv

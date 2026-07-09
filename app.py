@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import sqlite3
 import math
@@ -12,7 +15,7 @@ from api import *
 app = Flask(__name__)
 
 # Configure cookies
-app.config["SECRET_KEY"] = "abcde"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
 # Custom filter
 app.jinja_env.filters["sgd"] = sgd

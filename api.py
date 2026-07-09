@@ -1,6 +1,7 @@
+import os
 import finnhub
 
-API_KEY = "d930frhr01qpou38ohv0d930frhr01qpou38ohvg"
+API_KEY = os.environ.get("API_KEY")
 
 finnhub_client = finnhub.Client(api_key=API_KEY)
 
