@@ -1,5 +1,6 @@
 from functools import wraps
 import sqlite3
+from datetime import date, datetime
 
 from flask import redirect, render_template, render_template_string, request, session
 from api import *
@@ -39,7 +40,7 @@ def sgd(value):
 
 
 def calculate_portfolio_value(user_id):
-    """Returns a list of dictionaries containing each stock symbol, shares, price, total and the overall portfolio sum as a tuple"""
+    """Returns a dictionary containing the user's portfolio, total portfolio value, holdings value, and cash value"""
 
     cursor, connection = db_connect()
 
@@ -55,8 +56,43 @@ def calculate_portfolio_value(user_id):
             stock['price'] = current_price
             stock['total'] = round(stock['total_shares'] * current_price, 2)
             total += stock['total']
+
+        holdings_value = total - current_cash
         
-        return portfolio, total
+        return {
+            "portfolio": portfolio,
+            "total_value": total, 
+            "holdings_value": holdings_value,
+            "cash_value": current_cash
+        }
+
+    finally:
+        connection.close()
+
+
+def cache_daily_portfolio():
+    """Caches the daily portfolio value of all users"""
+
+    cursor, connection = db_connect()
+    today = date.today().isoformat()
+
+    try:
+        users = cursor.execute("select id from users").fetchall()
+
+        for user in users:
+            portfolio_info = calculate_portfolio_value(user["id"])
+
+            cursor.execute("insert into portfolio_value_history (user_id, snapshot_date, total_value, cash_value, holdings_value)" \
+            "values (?, ?, ?, ?, ?)" \
+            "on conflict (user_id, snapshot_date)" \
+            "do update set " \
+            "total_value = excluded.total_value, " \
+            "cash_value = excluded.cash_value, " \
+            "holdings_value = excluded.holdings_value, " \
+            "created_at = current_timestamp", 
+            (user["id"], today, portfolio_info["total_value"], portfolio_info["cash_value"], portfolio_info["holdings_value"]))
+
+            connection.commit()
 
     finally:
         connection.close()
