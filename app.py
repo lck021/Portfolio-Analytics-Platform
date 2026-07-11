@@ -66,7 +66,9 @@ def breakdown():
 
     try:
         # returns a list containing dictionaries with symbol and total_share fields
-        portfolio, total = calculate_portfolio_value(user_id)
+        portfolio_info = calculate_portfolio_value(user_id)
+        portfolio = portfolio_info["portfolio"]
+        total = portfolio_info["total_value"]
         chart_data = []
         other_label = []
         other_value = 0
@@ -97,7 +99,7 @@ def sizing():
 
     cursor, connection = db_connect()
     user_id = session["user_id"]
-    portfolio, total = calculate_portfolio_value(user_id)
+    total = calculate_portfolio_value(user_id)["total_value"]
 
     try:
         if request.method == "POST": # if user submitted for calculation

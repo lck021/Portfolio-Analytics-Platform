@@ -22,7 +22,7 @@
                     <label>Stock Symbol:</label>
                 </div>
                 <div class="col-4">
-                    <input class="form-control" name="symbol" placeholder="e.g. AAPL">
+                    <input class="form-control" id="symbol" name="symbol" placeholder="e.g. AAPL">
                 </div>
             </div>
             
@@ -31,7 +31,7 @@
                     <span>Current Price:</span>
                 </div>
                 <div class="col-4">
-                    <p id="current-price"></p>
+                    <span id="current-price"></span>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
             const response = await fetch(`/api/quote?symbol=${symbol}`);
             const data = await response.json()
 
-            document.getElementById("current-price").textContent = `Current Price: $${data.current_price}`
+            document.getElementById("current-price").textContent = `$${data.current_price}`
         })
     </script>
 {% endblock %}
