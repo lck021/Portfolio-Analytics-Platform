@@ -181,17 +181,23 @@ def sizing():
             capital_required = recommended_size * entry_price
             portfolio_allocation = round(capital_required / total * 100, 2)
 
-            return render_template("sizing_calc.html",
-                                   total=total, 
-                                   risk_per_share=risk_per_share, 
-                                   max_dollar_risk=max_dollar_risk, 
-                                   recommended_size=recommended_size, 
-                                   capital_required = capital_required, 
-                                   portfolio_allocation = portfolio_allocation)
+            return render_template(
+                                    "sizing.html",
+                                    total=total,
+                                    risk_per_trade=risk_per_trade,
+                                    symbol=symbol,
+                                    entry_price=entry_price,
+                                    stop_loss=stop_loss,
+                                    risk_per_share=risk_per_share,
+                                    max_dollar_risk=max_dollar_risk,
+                                    recommended_size=recommended_size,
+                                    capital_required=capital_required,
+                                    portfolio_allocation=portfolio_allocation,
+                                    )
 
         
         else: # if user tapped on navbar
-            return render_template("sizing.html", total=total)
+            return render_template("sizing.html", total=total, recommended_size=-1)
     
     finally:
         connection.close()

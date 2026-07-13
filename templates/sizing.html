@@ -7,7 +7,7 @@
 {% block main %}
     <section class="sizing-page">
         <div class="row align-items-end g-4 sizing-header">
-            <div class="col-lg-8">
+            <div class="col-md-8">
                 <p class="section-kicker">Position sizing</p>
                 <h2>Plan the trade before placing it</h2>
                 <p class="section-copy">
@@ -15,7 +15,7 @@
                 </p>
             </div>
 
-            <div class="col-lg-4">
+            <div class="col-md-4">
                 <div class="portfolio-value">
                     <span>Current portfolio value</span>
                     <strong>{{ total | sgd }}</strong>
@@ -24,67 +24,169 @@
         </div>
 
         <div class="row g-4 align-items-start">
-            <div class="col-lg-12">
-                <form class="sizing-card" action="/sizing" method="post">
-                    <div class="mb-3">
-                        <label class="form-label" for="risk_per_trade">Risk per trade (%)</label>
-                        <input class="form-control" id="risk_per_trade" name="risk_per_trade" placeholder="e.g. 1.5">
-                        <div class="form-text field-note">
-                            The maximum percentage of your portfolio you are willing to lose if the stop loss is hit.
+            <div class="col-md-6">
+                <div class="sizing-card">
+                    <h2 class="sizing-heading">Inputs</h2>
+                    <form action="/sizing" method="post">
+                        <div class="sizing-page-container">
+                            <label class="form-label" for="risk_per_trade">Risk per trade (%)</label>
+                            <input class="form-control" id="risk_per_trade" name="risk_per_trade" value="{{ risk_per_trade | default('') }}" placeholder="e.g. 1.5">
+                            <div class="form-text field-note">
+                                The maximum percentage of your portfolio you are willing to lose if the stop loss is hit.
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label" for="symbol">Stock symbol</label>
-                        <input class="form-control" id="symbol" name="symbol" placeholder="e.g. AAPL">
-                        <div class="form-text field-note">
-                            Used to confirm the ticker is valid and show the latest quoted price.
+                        <div class="sizing-page-container">
+                            <label class="form-label" for="symbol">Stock symbol</label>
+                            <input class="form-control" id="symbol" name="symbol" value="{{ symbol | default('') }}" placeholder="e.g. AAPL">
+                            <div class="form-text field-note">
+                                Used to confirm the ticker is valid and show the latest quoted price.
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="quote-preview mb-3">
-                        <span>Current Price</span>
-                        <strong id="current-price">(Enter a symbol)</strong>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="entry_price">Entry price ($)</label>
-                        <input class="form-control" id="entry_price" name="entry_price" placeholder="e.g. 200">
-                        <div class="form-text field-note">
-                            The price where you expect to open the position.
+                        <div class="sizing-page-container quote-preview">
+                            <label class="form-label" for="entry_price">Current Stock Price</label>
+                            <span id="current-price">(Enter a symbol)</span>
+                            <div class="form-text field-note">
+                                The current price of the relevant stock. Input a stock ticker to see its current price above. 
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-4">
-                        <label class="form-label" for="stop_loss">Stop loss ($)</label>
-                        <input class="form-control" id="stop_loss" name="stop_loss" placeholder="e.g. 190">
-                        <div class="form-text field-note">
-                            The exit price used to cap downside risk. It must be below the entry price for a long trade.
+                        <div class="sizing-page-container">
+                            <label class="form-label" for="entry_price">Entry price ($)</label>
+                            <input class="form-control" id="entry_price" name="entry_price" value="{{ entry_price | default('') }}" placeholder="e.g. 200">
+                            <div class="form-text field-note">
+                                The price where you expect to open the position. The proximity of this value to the current price determines when you buy this position.
+                            </div>
                         </div>
-                    </div>
 
-                    <button class="btn btn-primary" type="submit">
-                        Calculate position
-                    </button>
-                </form>
+                        <div class="sizing-page-container">
+                            <label class="form-label" for="stop_loss">Stop loss ($)</label>
+                            <input class="form-control" id="stop_loss" name="stop_loss" value="{{ stop_loss | default('') }}" placeholder="e.g. 190">
+                            <div class="form-text field-note">
+                                The exit price used to cap downside risk. It must be below the entry price for a long trade.
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">
+                            Calculate position
+                        </button>
+                    </form>
+                </div>
             </div>
+        
+        {% if recommended_size != -1 %}
+            <div class="col-md-6">
+                <div class="calculations-card">
+                    <h2 class="sizing-heading">Your position size</h2>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Risk per share</p>
+                        <p class="result-value">{{ risk_per_share | sgd }}</p>
+                        <p class="result-description">
+                            The difference between your entry price and stop-loss price.
+                        </p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Maximum dollar risk</p>
+                        <p class="result-value">{{ max_dollar_risk | sgd }}</p>
+                        <p class="result-description">The most this trade should lose, based on your portfolio value and risk percentage.</p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Recommended size</p>
+                        <p class="result-value">{{ recommended_size }} {{"share" if recommended_size == 1 else "shares"}}</p>
+                        <p class="result-description">The number of shares you can buy while staying within your maximum dollar risk.</p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Capital required</p>
+                        <p class="result-value">{{ capital_required | sgd }}</p>
+                        <p class="result-description">The estimated cash needed to open the recommended position.</p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Portfolio allocation</p>
+                        <p class="result-value">{{ portfolio_allocation}}%</p>
+                        <p class="result-description">The percentage of your total portfolio that this position would use.</p>
+                    </div>
+
+                    <div class="formula-strip">
+                        <span>Core formula</span>
+                        <code>shares = max risk ÷ (entry − stop)</code>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="col-md-6">
+                <div class="calculations-card">
+                    <h2 class="sizing-heading">Your position size</h2>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Risk per share</p>
+                        <p class="result-value">---</p>
+                        <p class="result-description">
+                            The difference between your entry price and stop-loss price.
+                        </p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Maximum dollar risk</p>
+                        <p class="result-value">---</p>
+                        <p class="result-description">The most this trade should lose, based on your portfolio value and risk percentage.</p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Recommended size</p>
+                        <p class="result-value">---</p>
+                        <p class="result-description">The number of shares you can buy while staying within your maximum dollar risk.</p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Capital required</p>
+                        <p class="result-value">---</p>
+                        <p class="result-description">The estimated cash needed to open the recommended position.</p>
+                    </div>
+
+                    <div class="sizing-page-container">
+                        <p class="result-label">Portfolio allocation</p>
+                        <p class="result-value">---</p>
+                        <p class="result-description">The percentage of your total portfolio that this position would use.</p>
+                    </div>
+
+                    <div class="formula-strip sizing-page-container">
+                        <span class="result-label">Core formula</span>
+                        <code>shares = max risk ÷ (entry − stop)</code>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         </div>
     </section>
 
     <script>
-        const symbol_input = document.getElementById("symbol");
+        const symbol_input = document.getElementById("symbol")
+        const current_price = document.getElementById("current-price")
 
-        symbol_input.addEventListener("change", async function () {
-            const symbol = symbol_input.value;
+        async function updatePrice () {
+            const symbol = symbol_input.value
 
             if (symbol.length == 0) {
-                return;
+                return
             }
 
-            const response = await fetch(`/api/quote?symbol=${symbol}`);
+            const response = await fetch(`/api/quote?symbol=${symbol}`)
             const data = await response.json()
 
-            document.getElementById("current-price").textContent = `$${data.current_price}`
-        })
+            current_price.textContent = `$${data.current_price}`
+        }
+
+        symbol_input.addEventListener("change", updatePrice)
+
+        if (symbol_input.value.length != 0) {
+            updatePrice()
+        }
     </script>
 {% endblock %}

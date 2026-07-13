@@ -39,8 +39,7 @@ body {
 }
 
 .portfolio-value,
-.sizing-card,
-.explanation-panel, 
+.sizing-card, 
 .calculations-card {
     border: 1px solid #2a3441;
     border-radius: 0.5rem;
@@ -70,16 +69,12 @@ body {
     padding: 1.5rem;
 }
 
-.results-heading {
-    margin: 0 0 0.75rem;
-}
-
 .calculations-card h3 {
     padding-top: 0;
     padding-bottom: 0.25rem;
 }
 
-.calculation-result {
+.sizing-page-container {
     padding: 1.25rem 0;
     border-bottom: 1px solid #26313d;
 }
@@ -136,13 +131,9 @@ body {
 
 .quote-preview {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 420px;
-    padding: 0.75rem 0.875rem;
-    border: 1px solid #26313d;
-    border-radius: 0.5rem;
-    background-color: #111820;
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 1px solid #26313d;
 }
 
 .quote-preview span {
@@ -151,6 +142,10 @@ body {
 
 .quote-preview strong {
     color: white;
+}
+
+.formula-strip span {
+    display: block;
 }
 
 @media (max-width: 991px) {
