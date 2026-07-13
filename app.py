@@ -10,6 +10,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import *
 from api import *
+from database import db_connect
 
 # Configure application
 app = Flask(__name__)
@@ -69,24 +70,64 @@ def breakdown():
         portfolio_info = calculate_portfolio_value(user_id)
         portfolio = portfolio_info["portfolio"]
         total = portfolio_info["total_value"]
-        chart_data = []
-        other_label = []
-        other_value = 0
 
-        for stock in portfolio: # combines smaller stocks into an 'others' category
+        stock_data = []
+        stock_data_master = []
+        other_stock_label = []
+        other_stock_value = 0
+
+        sector_data = {}
+        sector_data_master = {}
+        other_sector_label = []
+        other_sector_value = 0
+
+        for stock in portfolio: 
+            # adds all stock data into a master list first
+            stock_data_master.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
+
+            # combines smaller stocks into an 'others' category
             percentage = stock['total'] / total * 100
 
             if percentage < 5.0:
-                other_label.append(stock['symbol'])
-                other_value += stock['total']
+                other_stock_label.append(stock['symbol'])
+                other_stock_value += stock['total']
             
             else:
-                chart_data.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
+                stock_data.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
 
-        chart_data.append({"symbol" : "Cash", "total": current_cash})
-        chart_data.append({"symbol": f"Others - {' '.join(other_label)}", "total": other_value})
-        
-        return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total, chart_data=chart_data)
+            # creates sectoral data and adds it into a master list first
+            sector = get_metadata(stock['symbol'])["industry"]
+            sector_data_master[sector] = sector_data.get(sector, 0) + stock['total']
+
+        # adds cash and others field if present to stock_data
+        if other_stock_value > 0 and len(other_sector_label) > 1:
+            stock_data.append({"symbol" : "Cash", "total": current_cash})
+            stock_data.append({"symbol": f"Others - {' '.join(other_stock_label)}", "total": other_stock_value})
+        else:
+            stock_data_master.append({"symbol" : "Cash", "total": current_cash})
+            stock_data = stock_data_master
+
+
+        # combines smaller sectors into an 'others' category
+        for sector, sector_value in sector_data_master.items():
+            percentage = sector_value / total * 100
+
+            if percentage < 5.0:
+                other_sector_label.append(sector)
+                other_sector_value += sector_value
+
+            else:
+                sector_data[sector] = sector_data.get(sector, 0) + sector_value
+
+        # adds cash and others field if present to sector data
+        if other_sector_value > 0 and len(other_sector_label) > 1:
+            sector_data["Cash"] = current_cash
+            sector_data[f"Others - {' '.join(other_sector_label)}"] = other_sector_value
+        else:
+            sector_data_master["Cash"] = current_cash
+            sector_data = sector_data_master
+
+        return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total, stock_data=stock_data, sector_data=sector_data)
     
     finally:
         connection.close()

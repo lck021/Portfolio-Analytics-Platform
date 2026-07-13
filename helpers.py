@@ -1,9 +1,9 @@
 from functools import wraps
-import sqlite3
 from datetime import date, datetime
 
 from flask import redirect, render_template, render_template_string, request, session
 from api import *
+from database import db_connect
 
 
 def login_required(func) -> None:
@@ -22,15 +22,6 @@ def error(code, title, message):
     """Returns custom error message"""
 
     return render_template('error.html', code=code, title=title, message=message)
-
-
-def db_connect():
-    """Connects to sqlite database"""
-
-    connection = sqlite3.connect("platform.db")
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
-    return cursor, connection
 
 
 def sgd(value):
