@@ -181,7 +181,8 @@ def sizing():
             capital_required = recommended_size * entry_price
             portfolio_allocation = round(capital_required / total * 100, 2)
 
-            return render_template("sizing_calc.html", 
+            return render_template("sizing_calc.html",
+                                   total=total, 
                                    risk_per_share=risk_per_share, 
                                    max_dollar_risk=max_dollar_risk, 
                                    recommended_size=recommended_size, 

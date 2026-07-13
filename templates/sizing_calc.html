@@ -5,11 +5,61 @@
 {% endblock %}
 
 {% block main %}
-    <div class="mb-3 text-center">
-        <p>Risk Per Share: {{ risk_per_share | sgd }}</p>
-        <p>Maximum Dollar Risk: {{ max_dollar_risk | sgd }}</p>
-        <p>Recommended Size: {{ recommended_size }} {{ "share" if recommended_size == 1 else "shares" }}</p>
-        <p>Capital Required : {{ capital_required | sgd }}</p>
-        <p>Portfolio Allocation: {{ portfolio_allocation }}%</p>
-    </div>
+
+    <section class="sizing-page">
+        <div class="row align-items-end g-4 sizing-header">
+            <div class="col-lg-8">
+                <p class="section-kicker">Position sizing</p>
+                <h2>Plan the trade before placing it</h2>
+                <p class="section-copy">
+                    Guide your portfolio based on the calculations below. 
+                </p>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="portfolio-value">
+                    <span>Current portfolio value</span>
+                    <strong>{{ total | sgd }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-12 calculations-card">
+                <h2 class="results-heading">Your position size</h2>
+
+                <div class="calculation-result">
+                    <p class="result-label">Risk per share</p>
+                    <p class="result-value">{{ risk_per_share | sgd }}</p>
+                    <p class="result-description">
+                        The difference between your entry price and stop-loss price.
+                    </p>
+                </div>
+
+                <div class="calculation-result">
+                    <p class="result-label">Maximum dollar risk</p>
+                    <p class="result-value">{{ max_dollar_risk | sgd }}</p>
+                    <p class="result-description">The most this trade should lose, based on your portfolio value and risk percentage.</p>
+                </div>
+
+                <div class="calculation-result">
+                    <p class="result-label">Recommended size</p>
+                    <p class="result-value">{{ recommended_size | sgd }}</p>
+                    <p class="result-description">The number of shares you can buy while staying within your maximum dollar risk.</p>
+                </div>
+
+                <div class="calculation-result">
+                    <p class="result-label">Capital required</p>
+                    <p class="result-value">{{ capital_required | sgd }}</p>
+                    <p class="result-description">The estimated cash needed to open the recommended position.</p>
+                </div>
+
+                <div class="calculation-result">
+                    <p class="result-label">Portfolio allocation</p>
+                    <p class="result-value">{{ portfolio_allocation | sgd }}</p>
+                    <p class="result-description">The percentage of your total portfolio that this position would use.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}
