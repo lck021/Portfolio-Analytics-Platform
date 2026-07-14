@@ -104,12 +104,16 @@
                         <p class="result-label">Capital required</p>
                         <p class="result-value">{{ capital_required | sgd }}</p>
                         <p class="result-description">The estimated cash needed to open the recommended position.</p>
+                        <span class="info-label positive-label" id="capital-positive">*You have sufficient cash.</span>
+                        <span class="info-label negative-label" id="capital-negative">*Warning! You do not have sufficient cash.</span>
                     </div>
 
                     <div class="sizing-page-container">
                         <p class="result-label">Portfolio allocation</p>
-                        <p class="result-value">{{ portfolio_allocation}}%</p>
+                        <p class="result-value">{{ portfolio_allocation }}%</p>
                         <p class="result-description">The percentage of your total portfolio that this position would use.</p>
+                        <span class="info-label positive-label" id="portfolio-positive">*Your portfolio would be well diversified.</span>
+                        <span class="info-label negative-label" id="portfolio-negative">*Warning! Your portfolio would be too concentrated.</span>
                     </div>
 
                     <div class="formula-strip">
@@ -167,6 +171,7 @@
     </section>
 
     <script>
+        <!-- To dynamically show the current stock price-->
         const symbol_input = document.getElementById("symbol")
         const current_price = document.getElementById("current-price")
 
@@ -189,4 +194,41 @@
             updatePrice()
         }
     </script>
+
+    {% if recommended_size != -1 %}
+    <script id="cash" type="application/json">
+        {{ cash | tojson }}
+    </script>
+
+    <script id="capital-required" type="application/json">
+        {{ capital_required | tojson }}
+    </script>
+
+    <script id="portfolio-allocation" type="application/json">
+        {{ portfolio_allocation | tojson }}
+    </script>
+
+    <script>
+        <!-- To display positive/negative labels -->
+        const capitalRequired = JSON.parse(document.getElementById("capital-required").textContent)
+        const cash = JSON.parse(document.getElementById("cash").textContent)
+        const portfolioAllocation = JSON.parse(document.getElementById("portfolio-allocation").textContent)
+
+        if (cash > capitalRequired) {
+            document.getElementById("capital-negative").style.display = "none"
+        }
+        else {
+            document.getElementById("capital-positive").style.display = "none"
+        }
+        
+        if (portfolioAllocation < 15) {
+            document.getElementById("portfolio-negative").style.display = "none"
+        }
+
+        else {
+            document.getElementById("portfolio-positive").style.display = "none"
+        }
+
+    </script>
+    {% endif %}
 {% endblock %}

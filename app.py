@@ -140,7 +140,9 @@ def sizing():
 
     cursor, connection = db_connect()
     user_id = session["user_id"]
-    total = calculate_portfolio_value(user_id)["total_value"]
+    portfolio_info = calculate_portfolio_value(user_id)
+    total = portfolio_info["total_value"]
+    cash = portfolio_info["cash_value"]
 
     try:
         if request.method == "POST": # if user submitted for calculation
@@ -184,6 +186,7 @@ def sizing():
             return render_template(
                                     "sizing.html",
                                     total=total,
+                                    cash=cash,
                                     risk_per_trade=risk_per_trade,
                                     symbol=symbol,
                                     entry_price=entry_price,

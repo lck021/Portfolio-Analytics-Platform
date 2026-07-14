@@ -125,6 +125,26 @@ body {
     color: #97a3b1;
 }
 
+#current-price {
+    color: white;
+}
+
+.info-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    font-style: italic;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.positive-label {
+    color: #66FF00;
+}
+
+.negative-label {
+    color: #D3494E;
+}
+
 .field-note {
     max-width: 560px;
 }
