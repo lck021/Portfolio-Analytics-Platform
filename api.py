@@ -45,12 +45,14 @@ def get_metadata(symbol:str):
 
     cursor, connection = db_connect()
     today = datetime.today().date()
+    symbol = symbol.strip().upper()
 
     try:
         metadata = cursor.execute("select * from stock_metadata where ticker=?", (symbol,)).fetchone()
 
         if metadata is None: # if metadata has not been cached yet
             metadata = finnhub_client.company_profile2(symbol=symbol)
+            print(metadata)
             cursor.execute(
                             """
                             INSERT INTO stock_metadata (
@@ -65,7 +67,7 @@ def get_metadata(symbol:str):
                             VALUES (?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
-                                metadata["ticker"],
+                                symbol,
                                 metadata["name"],
                                 metadata["finnhubIndustry"],
                                 metadata["exchange"],
