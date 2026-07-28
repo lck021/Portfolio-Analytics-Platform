@@ -5,16 +5,29 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container">
-        <div class="row justify-content-center mb-3 align-items-center">
-            <div class="col-3 text-end">
-                <label>Stock Symbol:</label>
+    <section class="page quote-page">
+
+        <div class="row align-items-end g-4 sizing-header">
+            <div class="col-md-8">
+                <p class="section-kicker">Get Stock Info</p>
+                <h2>Analyse stock statistics before buying it</h2>
+                <p class="section-copy">
+                    Enter a stock symbol/ticker to view its instantaneous and historical performance.
+                </p>
             </div>
-            <div class="col-4">
-                <div class="d-flex gap-2">
-                    <input class="form-control" id="symbol" name="symbol" placeholder="e.g. AAPL">
-                    <button id="get-quote" class="btn btn-primary">Quote</button>
+
+            <div class="col-md-4">
+                <div class="portfolio-value">
+                    <span>Current portfolio value</span>
+                    <strong>{{ total | sgd }}</strong>
                 </div>
+            </div>
+        </div>
+
+        <div class="row g-4 align-items-start">
+            <div class="col-md-12 quote-input-container">
+                <input class="form-control" id="symbol" name="symbol" placeholder="e.g. AAPL">
+                <button id="get-quote" class="btn btn-primary">Quote</button>
             </div>
         </div>
 
@@ -80,14 +93,71 @@
                 <div id="previous-close"></div>
             </div>
         </div>
-    </div>
+
+        <div class="btn-group mb-3">
+            <button class="range-btn" data-range="1W">1W</button>
+            <button class="range-btn active" data-range="1M">1M</button> <!-- sets 1M as the default view -->
+            <button class="range-btn" data-range="6M">6M</button>
+            <button class="range-btn" data-range="1Y">1Y</button>
+            <button class="range-btn" data-range="5Y">5Y</button>
+        </div>
+
+        <div id="performance-chart" style="height:500px;"></div>
+    </section>
+
 
     <script>
+        // setting up chart before anything is inputted
+        const chart = LightweightCharts.createChart(
+            document.getElementById("performance-chart"),
+            {
+                layout: {
+                    background: { color: "#181c22" },
+                    textColor: "#d1d4dc",
+                },
+                width: document.getElementById("performance-chart").clientWidth,
+                height: 500,
+                grid: {
+                    vertLines: { color: "#2a3441" },
+                    horzLines: { color: "#2a3441" },
+                }
+            }
+        )
+
+        const series = chart.addSeries(LightweightCharts.AreaSeries, {
+            lineWidth: 2,
+        })
+
+        // defines function for loading history into chart
+        async function loadHistory(symbol, range) {
+            const response = await fetch(`/api/history?symbol=${symbol}&range=${range}`)
+            const data = await response.json()
+
+            console.log(data)
+
+            const firstValue = data[0].value
+            const lastValue = data[data.length-1].value
+            const gain = lastValue >= firstValue;
+
+            series.applyOptions({
+                lineColor: gain ? "#26a69a" : "#ef5350",
+                topColor: gain
+                    ? "rgba(38, 166, 154, 0.4)"
+                    : "rgba(239, 83, 80, 0.4)",
+                bottomColor: gain
+                    ? "rgba(38, 166, 154, 0)"
+                    : "rgba(239, 83, 80, 0)",
+            });
+
+            series.setData(data)
+        }
+
+        //gets symbol field and 'quote' button
         const button = document.getElementById("get-quote");
-        const symbol_input = document.getElementById("symbol")
+        const symbolInput = document.getElementById("symbol")
 
         button.addEventListener("click", async function () {
-            const symbol = symbol_input.value;
+            const symbol = symbolInput.value;
 
             if (symbol.length == 0) {
                 return;
@@ -98,6 +168,7 @@
 
             const sign = data.change > 0 ? "+" : data.change < 0 ? "-" : ""
 
+            //displays immediate data about stock
             document.getElementById("current-price").textContent = `$${data.current_price}`
             document.getElementById("change").textContent = `${sign}$${Math.abs(data.change)}`
             document.getElementById("percent-change").textContent = `${data.percent_change}%`
@@ -105,6 +176,19 @@
             document.getElementById("low").textContent = `${data.low}`
             document.getElementById("open").textContent = `${data.open}`
             document.getElementById("previous-close").textContent = `${data.previous_close}`
+
+            //shows chart automatically with default range
+            const defaultRangeButton = document.querySelector(".range-btn.active")
+            loadHistory(symbolInput.value,defaultRangeButton.dataset.range)
+        })
+
+        const rangeButtons = document.querySelectorAll(".range-btn")
+        rangeButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                rangeButtons.forEach((button) => {button.classList.remove("active")})
+                button.classList.add("active")
+                loadHistory(symbolInput.value, button.dataset.range)
+            })
         })
     </script>
 {% endblock %}

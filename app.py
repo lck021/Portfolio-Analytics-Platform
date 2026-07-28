@@ -1,4 +1,5 @@
 import os
+from types import MethodDescriptorType
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -83,7 +84,7 @@ def breakdown():
 
         for stock in portfolio: 
             # adds all stock data into a master list first
-            stock_data_master.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
+            stock_data_master.append({"symbol": stock['symbol'].strip().upper(), "total": stock['total']})
 
             # combines smaller stocks into an 'others' category
             percentage = stock['total'] / total * 100
@@ -93,7 +94,7 @@ def breakdown():
                 other_stock_value += stock['total']
             
             else:
-                stock_data.append({"symbol": stock['symbol'].upper(), "total": stock['total']})
+                stock_data.append({"symbol": stock['symbol'].strip().upper(), "total": stock['total']})
 
             # creates sectoral data and adds it into a master list first
             sector = get_metadata(stock['symbol'])["industry"]
@@ -165,7 +166,7 @@ def sizing():
             if entry_price == stop_loss or stop_loss > entry_price:
                 return error(400, "Bad Request", "Entry price and stop loss do not tally.")
             
-            symbol = request.form.get('symbol').upper()
+            symbol = request.form.get('symbol').strip().upper()
 
             if not symbol: # if symbol field is empty
                 return error(400, "Bad Request", "Please provide a symbol.")
@@ -211,7 +212,10 @@ def sizing():
 def quote():
     """Quote stock price and other details"""
 
-    return render_template('quote.html')
+    user_id = session["user_id"]
+    total = calculate_portfolio_value(user_id)["total_value"]
+
+    return render_template('quote.html',total=total)
 
 
 @app.route("/api/quote")
@@ -219,11 +223,32 @@ def quote():
 def get_quote_html():
     """Returns stock quote when queried from html page"""
 
-    symbol = request.args.get("symbol").upper()
+    symbol = request.args.get("symbol").strip().upper()
 
     data = get_quote(symbol)
 
     return jsonify(data)
+
+
+@app.route("/api/history", methods=["GET"])
+@login_required
+def stock_history():
+    """Obtains historical performance of a certain stock"""
+
+    VALID_RANGES = {"1W", "1M", "6M", "1Y", "5Y"}
+    range_param = request.args.get("range")
+    if range_param not in VALID_RANGES:
+        return error(400, "Bad Request", "Please provide a valid range.")
+
+    symbol = request.args.get('symbol').strip().upper()
+    
+    if not symbol: # if symbol field is empty
+        return error(400, "Bad Request", "Please provide a symbol.")
+
+    history = get_stock_history(symbol=symbol, range=range_param)
+
+    return history
+
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -235,7 +260,7 @@ def buy():
 
     try: 
         if request.method == 'POST': # if the user is trying to buy shares
-            symbol = request.form.get('symbol').upper()
+            symbol = request.form.get('symbol').strip().upper()
 
             if not symbol: # if symbol field is empty
                 return error(400, "Bad Request", "Please provide a symbol.")
@@ -291,7 +316,7 @@ def sell():
 
     try:
         if request.method == 'POST':  # if the user is trying to buy shares
-            symbol = request.form.get('symbol').upper()
+            symbol = request.form.get('symbol').strip().upper()
 
             if not symbol:  # if symbol field is empty
                 return error(400, "Bad Request", "Symbol field is empty.")

@@ -13,7 +13,7 @@ body {
     margin: 50px auto;
 }
 
-.sizing-page {
+.page {
     max-width: 1100px;
     margin: 0 auto;
 }
@@ -22,8 +22,7 @@ body {
     margin-bottom: 1.75rem;
 }
 
-.section-kicker,
-.panel-label {
+.section-kicker {
     margin-bottom: 0.35rem;
     color: #7dd3fc;
     font-size: 0.95rem;
@@ -102,7 +101,7 @@ body {
     font-weight: 700;
 }
 
-.sizing-page .form-control {
+.form-control {
     width: 100% !important;
     max-width: 420px;
     border-color: #344152;
@@ -110,14 +109,14 @@ body {
     color: white;
 }
 
-.sizing-page .form-control:focus {
+.form-control:focus {
     border-color: #0d6efd;
     background-color: #0f1318;
     color: white;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.2);
 }
 
-.sizing-page .form-control::placeholder {
+.form-control::placeholder {
     color: #738194;
 }
 
@@ -168,8 +167,36 @@ body {
     display: block;
 }
 
-@media (max-width: 991px) {
-    .portfolio-value {
-        max-width: 420px;
-    }
+.quote-input-container {
+    display: flex;
+    margin: 40px 0;
+    gap: 10px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 6px;
+}
+
+.range-btn {
+    background: transparent;
+    color: #8f98a8;
+    border: 1px solid #2a3441;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.range-btn:hover {
+    background: #212833;
+    color: #d1d4dc;
+}
+
+.range-btn.active {
+    background: #2962ff;
+    color: #ffffff;
+    border-color: #2962ff;
 }

@@ -169,10 +169,7 @@ def get_stock_history(symbol, range):
                 "1week": 260
             }
 
-    try:
-        if range not in RANGES:
-            return Exception("Wrong input range")
-        
+    try:        
         settings = RANGES[range]
         interval = settings["interval"]
         days = settings["days"]
@@ -255,7 +252,7 @@ def get_stock_history(symbol, range):
                                     )
                                 ).fetchall()
 
-            return [{"time": row["datetime"], "value": row["close"]} for row in rows]
+            return [{"time": iso_to_unix(row["datetime"]), "value": row["close"]} for row in rows]
 
         #if there is a cache and cache is up to date
         elif not is_cache_stale(interval=interval, last_cached_dt=last_cached_value):
@@ -269,7 +266,7 @@ def get_stock_history(symbol, range):
                                         ORDER BY datetime
                                         """,
                                         (symbol, interval, start_date)).fetchall()
-            return [{"time": row["datetime"], "value": row["close"]} for row in cached_data]
+            return [{"time": iso_to_unix(row["datetime"]), "value": row["close"]} for row in cached_data]
 
         #if there is a cache and it is not up to date
         else:
@@ -300,7 +297,9 @@ def get_stock_history(symbol, range):
                                     volume = excluded.volume;
                                 """,
                                 (
-                                    symbol, interval, candle["datetime"],
+                                    symbol, 
+                                    interval, 
+                                    datetime.fromisoformat(candle["datetime"]).isoformat(),
                                     float(candle["open"]), float(candle["high"]),
                                     float(candle["low"]), float(candle["close"]),
                                     int(candle["volume"])
@@ -317,7 +316,7 @@ def get_stock_history(symbol, range):
                                     (symbol, interval, start_date)
                                 ).fetchall()
 
-        return [{"time": row["datetime"], "value": row["close"]} for row in rows]
+        return [{"time": iso_to_unix(row["datetime"]), "value": row["close"]} for row in rows]
 
     finally:
         connection.close()
@@ -341,4 +340,11 @@ def is_cache_stale(interval, last_cached_dt: datetime.isoformat):
         return age > timedelta(minutes=15)
     return True
 
-print(get_stock_history(symbol="AAPL", range="1W"))
+def iso_to_unix(dt_iso):
+    """Converts an iso string into a unix timestamp to be used for LightWeight Charts"""
+    dt = datetime.fromisoformat(dt_iso)
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+
+    return int(dt.timestamp())
