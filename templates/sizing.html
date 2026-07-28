@@ -16,7 +16,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="portfolio-value">
+                <div class="panel-card portfolio-value">
                     <span>Current portfolio value</span>
                     <strong>{{ total | sgd }}</strong>
                 </div>
@@ -25,7 +25,7 @@
 
         <div class="row g-4 align-items-start">
             <div class="col-md-6">
-                <div class="sizing-card">
+                <div class="panel-card sizing-card">
                     <h2 class="sizing-heading">Inputs</h2>
                     <form action="/sizing" method="post">
                         <div class="sizing-page-container">
@@ -77,7 +77,7 @@
         
         {% if recommended_size != -1 %}
             <div class="col-md-6">
-                <div class="calculations-card">
+                <div class="panel-card calculations-card">
                     <h2 class="sizing-heading">Your position size</h2>
 
                     <div class="sizing-page-container">

@@ -37,13 +37,13 @@ body {
     color: #b8c0cc;
 }
 
-.portfolio-value,
-.sizing-card, 
-.calculations-card {
+.panel-card {
     border: 1px solid #2a3441;
     border-radius: 0.5rem;
     background-color: #181c22;
     box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.22);
+    padding: 1.5rem;
+    margin: 20px 0;
 }
 
 .portfolio-value {
@@ -60,12 +60,6 @@ body {
     display: block;
     margin-top: 0.25rem;
     font-size: 1.35rem;
-}
-
-.sizing-card,
-.explanation-panel, 
-.calculations-card {
-    padding: 1.5rem;
 }
 
 .calculations-card h3 {
@@ -171,6 +165,75 @@ body {
     display: flex;
     margin: 40px 0;
     gap: 10px;
+}
+
+.quote-card__header {
+    display: flex;
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+}
+
+.quote-card__ticker {
+    font-family: 'SF Mono', Consolas, Menlo, monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #e6edf3;
+    letter-spacing: 0.5px;
+}
+
+.quote-card__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.quote-card__price {
+  font-family: 'SF Mono', Consolas, Menlo, monospace;
+  font-size: 2.1rem;
+  font-weight: 600;
+  color: #e6edf3;
+  line-height: 1;
+}
+
+.quote-card__change {
+  font-family: 'SF Mono', Consolas, Menlo, monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  gap: 6px;
+  padding-bottom: 4px;
+  color: #8b949e; /* neutral fallback before JS sets direction */
+}
+
+.quote-card.is-up .quote-card__change {
+  color: #3fb950;
+}
+.quote-card.is-down .quote-card__change {
+  color: #f85149;
+}
+
+.quote-card__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+  border-top: 1px solid #2a3441;
+  padding-top: 14px;
+}
+
+.stat__label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.stat__value {
+  font-family: 'SF Mono', Consolas, Menlo, monospace;
+  font-size: 1.05rem;
+  color: #e6edf3;
 }
 
 .btn-group {
