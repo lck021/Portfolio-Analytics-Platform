@@ -241,9 +241,10 @@ body {
     gap: 6px;
 }
 
-.range-btn {
+.range-btn,
+.graph-type-selector {
     background: transparent;
-    color: #8f98a8;
+    color: #d1d4dc;
     border: 1px solid #2a3441;
     border-radius: 6px;
     padding: 6px 14px;
@@ -262,4 +263,9 @@ body {
     background: #2962ff;
     color: #ffffff;
     border-color: #2962ff;
+}
+
+.graph-type-selector option {
+    background-color: #181c22;
+    color: #d1d4dc;
 }

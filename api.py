@@ -252,11 +252,15 @@ def get_stock_history(symbol, range):
                                     )
                                 ).fetchall()
 
-            return [{"time": iso_to_unix(row["datetime"]), "value": row["close"]} for row in rows]
+            return [{"time": iso_to_unix(row["datetime"]), 
+                     "open": row["open"],
+                     "high": row["high"],
+                     "low": row["low"],
+                     "close": row["close"]} for row in rows]
 
         #if there is a cache and cache is up to date
         elif not is_cache_stale(interval=interval, last_cached_dt=last_cached_value):
-            cached_data = cursor.execute(
+            rows = cursor.execute(
                                         """
                                         SELECT *
                                         FROM historical_prices
@@ -266,7 +270,12 @@ def get_stock_history(symbol, range):
                                         ORDER BY datetime
                                         """,
                                         (symbol, interval, start_date)).fetchall()
-            return [{"time": iso_to_unix(row["datetime"]), "value": row["close"]} for row in cached_data]
+            
+            return [{"time": iso_to_unix(row["datetime"]), 
+                                 "open": row["open"],
+                                 "high": row["high"],
+                                 "low": row["low"],
+                                 "close": row["close"]} for row in rows]
 
         #if there is a cache and it is not up to date
         else:
@@ -316,7 +325,11 @@ def get_stock_history(symbol, range):
                                     (symbol, interval, start_date)
                                 ).fetchall()
 
-        return [{"time": iso_to_unix(row["datetime"]), "value": row["close"]} for row in rows]
+        return [{"time": iso_to_unix(row["datetime"]), 
+                             "open": row["open"],
+                             "high": row["high"],
+                             "low": row["low"],
+                             "close": row["close"]} for row in rows]
 
     finally:
         connection.close()
