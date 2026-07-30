@@ -170,65 +170,14 @@
         </div>
     </section>
 
-    <script>
-        <!-- To dynamically show the current stock price-->
-        const symbol_input = document.getElementById("symbol")
-        const current_price = document.getElementById("current-price")
-
-        async function updatePrice () {
-            const symbol = symbol_input.value
-
-            if (symbol.length == 0) {
-                return
-            }
-
-            const response = await fetch(`/api/quote?symbol=${symbol}`)
-            const data = await response.json()
-
-            current_price.textContent = `$${data.current_price}`
-        }
-
-        symbol_input.addEventListener("change", updatePrice)
-
-        if (symbol_input.value.length != 0) {
-            updatePrice()
-        }
-    </script>
-
     {% if recommended_size != -1 %}
-    <script id="cash" type="application/json">
-        {{ cash | tojson }}
-    </script>
-
-    <script id="capital-required" type="application/json">
-        {{ capital_required | tojson }}
-    </script>
-
-    <script id="portfolio-allocation" type="application/json">
-        {{ portfolio_allocation | tojson }}
-    </script>
-
-    <script>
-        <!-- To display positive/negative labels -->
-        const capitalRequired = JSON.parse(document.getElementById("capital-required").textContent)
-        const cash = JSON.parse(document.getElementById("cash").textContent)
-        const portfolioAllocation = JSON.parse(document.getElementById("portfolio-allocation").textContent)
-
-        if (cash > capitalRequired) {
-            document.getElementById("capital-negative").style.display = "none"
-        }
-        else {
-            document.getElementById("capital-positive").style.display = "none"
-        }
-        
-        if (portfolioAllocation < 15) {
-            document.getElementById("portfolio-negative").style.display = "none"
-        }
-
-        else {
-            document.getElementById("portfolio-positive").style.display = "none"
-        }
-
-    </script>
+    <div
+        id="calculator-data"
+        data-cash="{{ cash }}"
+        data-capital-required="{{ capital_required }}"
+        data-portfolio-allocation="{{ portfolio_allocation }}">
+    </div>
     {% endif %}
+
+    <script src="/static/js/sizing.js"></script>
 {% endblock %}
