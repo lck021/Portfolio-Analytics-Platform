@@ -35,27 +35,54 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    """Show portfolio value"""
+    """Show homepage dashboard"""
+    
+    return render_template('dashboard.html')
+
+
+@app.route("/api/dashboard", methods=["GET"])
+@login_required
+def calculate_dashboard():
+    """Calculates biggest winner, loser, and best and worst performing position"""
 
     user_id = session['user_id']
-    cursor, connection = db_connect()
+    portfolio_info = calculate_portfolio_value(user_id)
 
-    try:
-        # returns a list containing dictionaries with symbol and total_share fields
-        portfolio = cursor.execute("select symbol, sum(shares) as total_shares from transactions where user_id=? group by symbol", (user_id,)).fetchall()
-        
-        current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()["cash"]
-        total = current_cash
+    dollar_change = {}
+    percent_change = {}
 
-        for stock in portfolio: # adds cash from each stock into total, 'stock' is a dictionary
-            current_price = get_quote(stock['symbol'])["current_price"]
-            total += round(stock['total_shares'] * current_price, 2)
-        
-        return render_template('dashboard.html', total_value=total)
-    
-    finally:
-        connection.close()
+    for stock in portfolio_info["portfolio"]:
+        market_value = stock["total"]
+        cost_basis = stock["total_shares"] * calculate_average_cost()
 
+        profit_loss = market_value - cost_basis
+        dollar_change[stock["symbol"]] = profit_loss
+
+        percent_return = (profit_loss / cost_basis) * 100
+        percent_change[stock["symbol"]] = percent_return
+
+    aescend_dollar_change = list(sorted(dollar_change.items(), key=lambda item: item[1]))
+    aescend_percent_change = list(sorted(percent_change.items(), key=lambda item: item[1]))
+
+    return {
+        "portfolio_value": portfolio_info["total_value"],
+        "largest_winner": {
+            "symbol": aescend_dollar_change[-1][0],
+            "profit_loss": aescend_dollar_change[-1][1]
+        },
+        "largest loser": {
+            "symbol": aescend_dollar_change[0][0],
+            "profit_loss": aescend_dollar_change[0][1]
+        },
+        "largest_winner": {
+            "symbol": aescend_percent_change[-1][0],
+            "profit_loss": aescend_percent_change[-1][1]
+        },
+        "largest loser": {
+            "symbol": aescend_percent_change[0][0],
+            "profit_loss": aescend_percent_change[0][1]
+        }
+    }
 
 @app.route('/breakdown')
 @login_required
@@ -252,7 +279,6 @@ def stock_history():
     history = get_stock_history(symbol=symbol, range=range_param)
 
     return history
-
 
 
 @app.route("/buy", methods=["GET", "POST"])
