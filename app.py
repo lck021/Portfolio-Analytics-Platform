@@ -166,14 +166,12 @@ def sizing():
             if entry_price == stop_loss or stop_loss > entry_price:
                 return error(400, "Bad Request", "Entry price and stop loss do not tally.")
             
-            symbol = request.form.get('symbol').strip().upper()
+            symbol = request.form.get('symbol','').strip().upper()
 
             if not symbol: # if symbol field is empty
                 return error(400, "Bad Request", "Please provide a symbol.")
-            
-            data = get_quote(symbol)
 
-            if data is None:
+            if not is_valid_ticker(symbol):
                 return error(400, "Bad Request", "Please provide a valid symbol.")
             
             # doing calculation
@@ -223,7 +221,10 @@ def quote():
 def get_quote_html():
     """Returns stock quote when queried from html page"""
 
-    symbol = request.args.get("symbol").strip().upper()
+    symbol = request.args.get("symbol",'').strip().upper()
+
+    if not is_valid_ticker(symbol):
+        return error(400, "Bad Request", "Please provide a valid symbol.")
 
     data = get_quote(symbol)
 
@@ -240,10 +241,13 @@ def stock_history():
     if range_param not in VALID_RANGES:
         return error(400, "Bad Request", "Please provide a valid range.")
 
-    symbol = request.args.get('symbol').strip().upper()
+    symbol = request.args.get('symbol','').strip().upper()
     
     if not symbol: # if symbol field is empty
         return error(400, "Bad Request", "Please provide a symbol.")
+
+    if not is_valid_ticker(symbol):
+        return error(400, "Bad Request", "Please provide a valid symbol.")
 
     history = get_stock_history(symbol=symbol, range=range_param)
 
@@ -260,15 +264,15 @@ def buy():
 
     try: 
         if request.method == 'POST': # if the user is trying to buy shares
-            symbol = request.form.get('symbol').strip().upper()
+            symbol = request.form.get('symbol','').strip().upper()
 
             if not symbol: # if symbol field is empty
                 return error(400, "Bad Request", "Please provide a symbol.")
 
-            data = get_quote(symbol)
-
-            if data is None: # if symbol does not exist
+            if not is_valid_ticker(symbol): # if symbol is not valid
                 return error(400, "Bad Request", "Please provide a valid symbol.")
+
+            data = get_quote(symbol)
             
             shares = request.form.get('shares') # amount of shares user wants to buy
 
@@ -316,10 +320,13 @@ def sell():
 
     try:
         if request.method == 'POST':  # if the user is trying to buy shares
-            symbol = request.form.get('symbol').strip().upper()
+            symbol = request.form.get('symbol','').strip().upper()
 
             if not symbol:  # if symbol field is empty
                 return error(400, "Bad Request", "Symbol field is empty.")
+
+            if not is_valid_ticker(symbol): # if symbol is not valid
+                return error(400, "Bad Request", "Please provide a valid symbol.")
 
             total_share = cursor.execute("select sum(shares) as total_share from transactions where user_id=? and symbol=?", (user_id, symbol)).fetchone()["total_share"]
             if total_share <= 0:  # if user somehow does not own any shares of the selected stock
