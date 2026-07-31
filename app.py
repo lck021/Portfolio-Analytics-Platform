@@ -43,7 +43,7 @@ def index():
 @app.route("/api/dashboard", methods=["GET"])
 @login_required
 def calculate_dashboard():
-    """Calculates biggest winner, loser, and best and worst performing position"""
+    """Calculates needed info to display biggest winner, loser, and best and worst performing position"""
 
     user_id = session['user_id']
     portfolio_info = calculate_portfolio_value(user_id)
@@ -53,36 +53,41 @@ def calculate_dashboard():
 
     for stock in portfolio_info["portfolio"]:
         market_value = stock["total"]
-        cost_basis = stock["total_shares"] * calculate_average_cost()
+        cost_basis = stock["total_shares"] * calculate_average_cost(stock["symbol"])
 
         profit_loss = market_value - cost_basis
-        dollar_change[stock["symbol"]] = profit_loss
 
         percent_return = (profit_loss / cost_basis) * 100
+
+        dollar_change[stock["symbol"]] = {"cost_basis": cost_basis,"profit_loss": profit_loss, "percent_return": percent_return}
         percent_change[stock["symbol"]] = percent_return
 
-    aescend_dollar_change = list(sorted(dollar_change.items(), key=lambda item: item[1]))
+    aescend_dollar_change = list(sorted(dollar_change.items(), key=lambda item: item[1]["profit_loss"]))
     aescend_percent_change = list(sorted(percent_change.items(), key=lambda item: item[1]))
 
-    return {
+    return jsonify({
         "portfolio_value": portfolio_info["total_value"],
         "largest_winner": {
             "symbol": aescend_dollar_change[-1][0],
-            "profit_loss": aescend_dollar_change[-1][1]
+            "cost_basis": aescend_dollar_change[-1][1]["cost_basis"],
+            "profit_loss": aescend_dollar_change[-1][1]["profit_loss"],
+            "percent_return": aescend_dollar_change[-1][1]["percent_return"]
         },
-        "largest loser": {
+        "largest_loser": {
             "symbol": aescend_dollar_change[0][0],
-            "profit_loss": aescend_dollar_change[0][1]
+            "cost_basis": aescend_dollar_change[0][1]["cost_basis"],
+            "profit_loss": aescend_dollar_change[0][1]["profit_loss"],
+            "percent_return": aescend_dollar_change[0][1]["percent_return"]
         },
-        "largest_winner": {
+        "best_position": {
             "symbol": aescend_percent_change[-1][0],
-            "profit_loss": aescend_percent_change[-1][1]
+            "percent_return": aescend_percent_change[-1][1]
         },
-        "largest loser": {
+        "worst_position": {
             "symbol": aescend_percent_change[0][0],
-            "profit_loss": aescend_percent_change[0][1]
+            "percent_return": aescend_percent_change[0][1]
         }
-    }
+    })
 
 @app.route('/breakdown')
 @login_required

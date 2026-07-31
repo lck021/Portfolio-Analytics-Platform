@@ -488,31 +488,3 @@ def iso_to_unix(dt_iso):
         dt = dt.replace(tzinfo=timezone.utc)
 
     return int(dt.timestamp())
-
-
-def calculate_average_cost(symbol):
-    """Calculates the average cost of a share the user currently owns"""
-
-    symbol = symbol.strip().upper()
-    cursor, connection = db_connect()
-
-    try:
-        rows = cursor.execute(
-                                """
-                                SELECT *
-                                FROM transactions
-                                WHERE symbol = ?
-                                """,
-                                (symbol,)).fetchall()
-
-        total_spent = 0
-        total_shares = 0
-
-        for row in rows:
-            total_shares += row["shares"]
-            total_spent += row["shares"] * row["price"]
-
-        return float(total_spent / total_shares)
-
-    finally:
-        connection.close()

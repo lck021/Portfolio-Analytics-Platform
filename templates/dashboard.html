@@ -5,7 +5,58 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Portfolio Dashboard</h1>
-    <h2>Portfolio Value</h2>
-    <p>filler</p>
+    <div class="row align-items-end g-4 sizing-header">
+        <div class="col-md-12">
+            <p class="section-kicker">Portfolio Dashboard</p>
+            <h2>See how your portfolio performed at a glance</h2>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card card--full-width">
+            <p class="card__label">Portfolio value</p>
+            <p class="card__value card__value--large" id="portfolio-value"></p>
+        </div>
+    
+        <div class="card">
+            <p class="card__label">Largest Winner</p>
+            <div class="card__row">
+                <span class="card__symbol" id="largest-winner-symbol"></span>
+                <span class="card__badge card__badge--positive" id="largest-winner-percent"></span>
+            </div>
+            <p class="card__amount card__amount--positive" id="largest-winner-value"></p>
+            <p class="card__subtext" id="largest-winner-subtext"></p>
+        </div>
+    
+        <div class="card">
+            <p class="card__label">Largest Loser</p>
+            <div class="card__row">
+                <span class="card__symbol" id="largest-loser-symbol"></span>
+                <span class="card__badge card__badge--negative" id="largest-loser-percent"></span>
+            </div>
+            <p class="card__amount card_amount--negative" id="largest-loser-value"></p>
+            <p class="card__subtext" id="largest-loser-subtext"></p>
+        </div>
+    
+        <div class="card">
+            <p class="card__label">Best Performing Position</p>
+            <div class="card__row">
+                <span class="card__symbol" id="best-position-symbol"></span>
+                <span class="card__badge card__badge--positive" id="best-position-return"></span>
+            </div>
+            <p class="card__subtext"></p>
+        </div>
+    
+        <div class="card">
+            <p class="card__label">Worst Performing Position</p>
+            <div class="card__row">
+                <span class="card__symbol" id="worst-position-symbol"></span>
+                <span class="card__badge card_badge--negative" id="worst-position-return"></span>
+            </div>
+            <p class="card__subtext"></p>
+        </div>
+    
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
 {% endblock %}

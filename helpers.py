@@ -61,6 +61,34 @@ def calculate_portfolio_value(user_id):
         connection.close()
 
 
+def calculate_average_cost(symbol):
+    """Calculates the average cost of a share the user currently owns"""
+
+    symbol = symbol.strip().upper()
+    cursor, connection = db_connect()
+
+    try:
+        rows = cursor.execute(
+                                """
+                                SELECT *
+                                FROM transactions
+                                WHERE symbol = ?
+                                """,
+                                (symbol,)).fetchall()
+
+        total_spent = 0
+        total_shares = 0
+
+        for row in rows:
+            total_shares += row["shares"]
+            total_spent += row["shares"] * row["price"]
+
+        return float(total_spent / total_shares)
+
+    finally:
+        connection.close()
+
+
 def cache_daily_portfolio():
     """Caches the daily portfolio value of all users"""
 
