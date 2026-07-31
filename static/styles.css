@@ -1,6 +1,15 @@
+:root {
+    --green-bg: #10281d;
+    --green-text: #4ade80;
+    --red-bg: #2b1414;
+    --red-text: #f87171;
+    --text-muted: #737373;
+}
+
 body {
     background-color: #121212;
     color: white;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .navbar {
@@ -18,6 +27,27 @@ body {
     margin: 0 auto;
 }
 
+/* for all input fields */
+.form-control {
+    width: 100% !important;
+    max-width: 420px;
+    border-color: #344152;
+    background-color: #0f1318;
+    color: white;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    background-color: #0f1318;
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.2);
+}
+
+.form-control::placeholder {
+    color: #738194;
+}
+
+/* for headers on all pages except dashboard */
 .sizing-header {
     margin-bottom: 1.75rem;
 }
@@ -37,17 +67,9 @@ body {
     color: #b8c0cc;
 }
 
-.panel-card {
-    border: 1px solid #2a3441;
-    border-radius: 0.5rem;
-    background-color: #181c22;
-    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.22);
-    padding: 1.5rem;
-    margin: 20px 0;
-}
-
 .portfolio-value {
     padding: 1rem 1.125rem;
+    margin: 0;
 }
 
 .portfolio-value span {
@@ -62,6 +84,69 @@ body {
     font-size: 1.35rem;
 }
 
+/* for cards on all pages */
+.panel-card {
+    border: 1px solid #2a3441;
+    border-radius: 0.5rem;
+    background-color: #181c22;
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.22);
+    padding: 1.25rem;
+    margin: 15px 0;
+}
+
+.panel-card--full-width {
+    width: 100%;
+}
+
+.panel-card__label {
+    font-size: 13px;
+    color: #a3a3a3;
+}
+
+.panel-card__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.panel-card__symbol {
+    font-size: 23px;
+    font-weight: 600;
+}
+
+.panel-card__badge {
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 1rem;
+    font-weight: 500;
+}
+
+.panel-card__badge--positive {
+    background: var(--green-bg);
+    color: var(--green-text);
+}
+
+.panel-card__badge--negative {
+    background: var(--red-bg);
+    color: var(--red-text);
+}
+
+.panel-card__amount {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 10px 0 0;
+}
+
+.panel-card__amount--positive { color: var(--green-text); }
+.panel-card__amount--negative { color: var(--red-text); }
+
+.panel-card__subtext {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 7.5px 0 0 0;
+}
+
+/* for position sizing page */
 .calculations-card h3 {
     padding-top: 0;
     padding-bottom: 0.25rem;
@@ -95,25 +180,6 @@ body {
     font-weight: 700;
 }
 
-.form-control {
-    width: 100% !important;
-    max-width: 420px;
-    border-color: #344152;
-    background-color: #0f1318;
-    color: white;
-}
-
-.form-control:focus {
-    border-color: #0d6efd;
-    background-color: #0f1318;
-    color: white;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.2);
-}
-
-.form-control::placeholder {
-    color: #738194;
-}
-
 .sizing-page .form-text {
     color: #97a3b1;
 }
@@ -122,6 +188,7 @@ body {
     color: white;
 }
 
+/* for positive/negative labels on sizing page */
 .info-label {
     font-weight: 600;
     font-size: 0.85rem;
@@ -131,17 +198,18 @@ body {
 }
 
 .positive-label {
-    color: #66FF00;
+    color: var(--green-text);
 }
 
 .negative-label {
-    color: #D3494E;
+    color: var(--red-text);
 }
 
 .field-note {
     max-width: 560px;
 }
 
+/* for quote-preview on sizing page */
 .quote-preview {
     display: flex;
     flex-direction: column;
@@ -161,6 +229,7 @@ body {
     display: block;
 }
 
+/* for quote page */
 .quote-input-container {
     display: flex;
     margin: 40px 0;
@@ -213,6 +282,7 @@ body {
   color: #f85149;
 }
 
+/* for quote card information */
 .quote-card__stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -236,6 +306,7 @@ body {
   color: #e6edf3;
 }
 
+/* for graph functonality buttons and input on quote page */
 .btn-group {
     display: flex;
     gap: 6px;
@@ -268,4 +339,17 @@ body {
 .graph-type-selector option {
     background-color: #181c22;
     color: #d1d4dc;
+}
+
+/* for dashboard page */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 20px;
+  padding-top: 14px;
+}
+
+.dashboard-portfolio-value strong {
+    font-size: 28px !important;
+    font-weight: 600;
 }

@@ -57,13 +57,15 @@ def calculate_dashboard():
 
         profit_loss = market_value - cost_basis
 
-        percent_return = (profit_loss / cost_basis) * 100
+        percent_return = (profit_loss / cost_basis) 
+
+        percent_of_portfolio = market_value / portfolio_info["total_value"] 
 
         dollar_change[stock["symbol"]] = {"cost_basis": cost_basis,"profit_loss": profit_loss, "percent_return": percent_return}
-        percent_change[stock["symbol"]] = percent_return
+        percent_change[stock["symbol"]] = {"percent_return": percent_return, "percent_of_portfolio": percent_of_portfolio}
 
     aescend_dollar_change = list(sorted(dollar_change.items(), key=lambda item: item[1]["profit_loss"]))
-    aescend_percent_change = list(sorted(percent_change.items(), key=lambda item: item[1]))
+    aescend_percent_change = list(sorted(percent_change.items(), key=lambda item: item[1]["percent_return"]))
 
     return jsonify({
         "portfolio_value": portfolio_info["total_value"],
@@ -81,11 +83,13 @@ def calculate_dashboard():
         },
         "best_position": {
             "symbol": aescend_percent_change[-1][0],
-            "percent_return": aescend_percent_change[-1][1]
+            "percent_return": aescend_percent_change[-1][1]["percent_return"],
+            "percent_of_portfolio": aescend_percent_change[-1][1]["percent_of_portfolio"]
         },
         "worst_position": {
             "symbol": aescend_percent_change[0][0],
-            "percent_return": aescend_percent_change[0][1]
+            "percent_return": aescend_percent_change[0][1]["percent_return"],
+            "percent_of_portfolio": aescend_percent_change[0][1]["percent_of_portfolio"]
         }
     })
 

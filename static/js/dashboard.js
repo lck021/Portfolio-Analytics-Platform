@@ -18,7 +18,7 @@ async function loadDashboard() {
 
     setText(
         "largest-winner-percent",
-        `${data.largest_winner.percent_return.toFixed(2)}%`
+        data.largest_winner.percent_return.toLocaleString('en-US',{style:'percent'})
     )
 
     setText(
@@ -38,7 +38,7 @@ async function loadDashboard() {
 
     setText(
         "largest-loser-percent",
-        `${data.largest_loser.percent_return.toFixed(2)}%`
+        data.largest_loser.percent_return.toLocaleString('en-US',{style:'percent'})
     )
 
     setText(
@@ -58,7 +58,12 @@ async function loadDashboard() {
 
     setText(
         "best-position-return",
-        `${data.best_position.percent_return.toFixed(2)}%`
+        data.best_position.percent_return.toLocaleString('en-US',{style:'percent'})
+    )
+
+    setText(
+        "best-position-subtext",
+        `${data.best_position.percent_of_portfolio.toLocaleString('en-US',{style:'percent'})} of portfolio`
     )
 
     setText(
@@ -68,7 +73,12 @@ async function loadDashboard() {
 
     setText(
         "worst-position-return",
-        `${data.worst_position.percent_return.toFixed(2)}%`
+        data.worst_position.percent_return.toLocaleString('en-US',{style:'percent'})
+    )
+
+    setText(
+        "worst-position-subtext",
+        `${data.worst_position.percent_of_portfolio.toLocaleString('en-US',{style:'percent'})} of portfolio`
     )
 }
 
