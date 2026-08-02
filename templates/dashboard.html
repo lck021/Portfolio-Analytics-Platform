@@ -16,10 +16,14 @@
         <span>Current portfolio value</span>
         <strong id="portfolio-value"></strong>
     </div>
+
+    <div class="dashboard--empty" id="dashboard--empty" style="display: none;">
+        <p id="dashboard--empty-text"></p>
+    </div>
     
-    <div class="dashboard-grid">
+    <div class="dashboard-grid" id="dashboard--full">
         <div class="panel-card">
-            <p class="panel-card__label">Largest Winner</p>
+            <p class="panel-card__label">Today's Largest Winner</p>
             <div class="panel-card__row">
                 <span class="panel-card__symbol" id="largest-winner-symbol"></span>
                 <span class="panel-card__badge panel-card__badge--positive" id="largest-winner-percent"></span>
@@ -29,7 +33,7 @@
         </div>
     
         <div class="panel-card">
-            <p class="panel-card__label">Largest Loser</p>
+            <p class="panel-card__label">Today's Largest Loser</p>
             <div class="panel-card__row">
                 <span class="panel-card__symbol" id="largest-loser-symbol"></span>
                 <span class="panel-card__badge panel-card__badge--negative" id="largest-loser-percent"></span>
@@ -39,7 +43,7 @@
         </div>
     
         <div class="panel-card">
-            <p class="panel-card__label">Best Performing Position</p>
+            <p class="panel-card__label">Today's Best Performing Position</p>
             <div class="panel-card__row">
                 <span class="panel-card__symbol" id="best-position-symbol"></span>
                 <span class="panel-card__badge panel-card__badge--positive" id="best-position-return"></span>
@@ -48,7 +52,7 @@
         </div>
     
         <div class="panel-card">
-            <p class="panel-card__label">Worst Performing Position</p>
+            <p class="panel-card__label">Today's Worst Performing Position</p>
             <div class="panel-card__row">
                 <span class="panel-card__symbol" id="worst-position-symbol"></span>
                 <span class="panel-card__badge panel-card__badge--negative" id="worst-position-return"></span>

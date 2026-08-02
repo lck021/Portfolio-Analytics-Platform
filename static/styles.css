@@ -47,7 +47,7 @@ body {
     color: #738194;
 }
 
-/* for headers on all pages except dashboard */
+/* for headers on all pages */
 .sizing-header {
     margin-bottom: 1.75rem;
 }
@@ -144,6 +144,24 @@ body {
     font-size: 12px;
     color: var(--text-muted);
     margin: 7.5px 0 0 0;
+}
+
+/* for empty dashboard and breakdown pages */
+.dashboard--empty,
+.breakdown--empty {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border: 2px dashed #26313d;
+  border-radius: 8px;
+  background: transparent;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.dashboard--empty p,
+.breakdown--empty p {
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 /* for position sizing page */

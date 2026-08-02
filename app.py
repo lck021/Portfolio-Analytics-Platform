@@ -48,6 +48,13 @@ def calculate_dashboard():
     user_id = session['user_id']
     portfolio_info = calculate_portfolio_value(user_id)
 
+    if len(portfolio_info["portfolio"]) < 2:
+        return jsonify({
+            "portfolio_value": portfolio_info["total_value"],
+            "insufficient_data": True,
+            "position_count": len(portfolio_info["portfolio"])
+        })
+
     dollar_change = {}
     percent_change = {}
 
@@ -106,6 +113,14 @@ def breakdown():
         # returns a list containing dictionaries with symbol and total_share fields
         portfolio_info = calculate_portfolio_value(user_id)
         portfolio = portfolio_info["portfolio"]
+
+        if len(portfolio) == 0:
+            return render_template(
+                'breakdown.html',
+                insufficient_data=True,
+                current_cash=portfolio_info["cash_value"]
+            )
+
         total = portfolio_info["total_value"]
 
         stock_data = []
@@ -134,7 +149,7 @@ def breakdown():
 
             # creates sectoral data and adds it into a master list first
             sector = get_metadata(stock['symbol'])["industry"]
-            sector_data_master[sector] = sector_data.get(sector, 0) + stock['total']
+            sector_data_master[sector] = sector_data_master.get(sector, 0) + stock['total']
 
         # adds cash and others field if present to stock_data
         if other_stock_value > 0 and len(other_sector_label) > 1:

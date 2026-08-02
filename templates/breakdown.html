@@ -6,7 +6,14 @@
 
 {% block main %}
     <h1>Portfolio Breakdown</h1>
-    <h2>Stock Breakdown</h2>
+
+    {% if insufficient_data %}
+    <div class="breakdown--empty">
+        <p id="breakdown--empty-text">Add a position to see your portfolio breakdown.</p>
+        <p>Current cash: {{ current_cash | sgd }}</p>
+    </div>
+
+    {% else %}
     <table class="table table-dark table-striped">
         <thead>
             <tr>
@@ -135,4 +142,5 @@
     </script>
 
     <script src="/static/js/breakdown.js"></script>
+    {% endif %}
 {% endblock %}

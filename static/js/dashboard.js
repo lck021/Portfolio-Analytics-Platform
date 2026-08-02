@@ -2,6 +2,10 @@ function setText(id, text) {
     document.getElementById(id).textContent = text
 }
 
+function setVisible(id, visible) {
+    document.getElementById(id).style.display = visible ? "" : "none"
+}
+
 async function loadDashboard() {
     const response = await fetch("/api/dashboard")
     const data = await response.json()
@@ -11,6 +15,21 @@ async function loadDashboard() {
         data.portfolio_value.toLocaleString('en-US',{style:'currency', currency:'USD'})
     )
 
+    if (data.insufficient_data) {
+        setVisible("dashboard--full", false)
+        setVisible("dashboard--empty", true)
+        setText(
+            "dashboard--empty-text",
+            data.position_count == 0
+                ? "Add a position to see portfolio insights."
+                : "Add one more position to compare winners and losers."
+        )
+        return
+    }
+
+    setVisible("dashboard--full", true)
+    setVisible("dashboard--empty", false)
+
     setText(
         "largest-winner-symbol",
         data.largest_winner.symbol
@@ -18,12 +37,12 @@ async function loadDashboard() {
 
     setText(
         "largest-winner-percent",
-        data.largest_winner.percent_return.toLocaleString('en-US',{style:'percent'})
+        `+${data.largest_winner.percent_return.toLocaleString('en-US',{style:'percent'})}`
     )
 
     setText(
         "largest-winner-value",
-        data.largest_winner.profit_loss.toLocaleString('en-US',{style:'currency', currency:'USD'})
+        `+${data.largest_winner.profit_loss.toLocaleString('en-US',{style:'currency', currency:'USD'})}`
     )
 
     setText(
@@ -58,7 +77,7 @@ async function loadDashboard() {
 
     setText(
         "best-position-return",
-        data.best_position.percent_return.toLocaleString('en-US',{style:'percent'})
+        `+${data.best_position.percent_return.toLocaleString('en-US',{style:'percent'})}`
     )
 
     setText(
