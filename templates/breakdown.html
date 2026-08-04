@@ -1,146 +1,34 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    My Portfolio
+    Portfolio Breakdown
 {% endblock %}
 
 {% block main %}
-    <h1>Portfolio Breakdown</h1>
-
-    {% if insufficient_data %}
-    <div class="breakdown--empty">
-        <p id="breakdown--empty-text">Add a position to see your portfolio breakdown.</p>
-        <p>Current cash: {{ current_cash | sgd }}</p>
+    <div class="row align-items-end g-4 page-header">
+        <div class="col-md-12">
+            <p class="section-kicker">Portfolio Breakdown</p>
+            <h2>Understand how your portfolio is allocated</h2>
+        </div>
     </div>
 
-    {% else %}
+    <div class="breakdown--empty" id="breakdown--empty">
+        <p id="breakdown--empty-text">Add a position to see your portfolio breakdown.</p>
+        <p id="breakdown--empty-cash"></p>
+    </div>
+
     <table class="table table-dark table-striped">
-        <thead>
-            <tr>
-                <th class="text-start"><strong>Symbol</strong></th>
-                <th class="text-end"><strong>Shares</strong></th>
-                <th class="text-end"><strong>Price</strong></th>
-                <th class="text-end"><strong>Total</strong></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock in portfolio %}
-            <tr>
-                <td class="text-start">{{ stock['symbol'] }}</td>
-                <td class="text-end">{{ stock['total_shares'] }}</td>
-                <td class="text-end">{{ stock['price'] | sgd }}</td>
-                <td class="text-end">{{ stock['total'] | sgd }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="3" class="text-end"><strong>Cash</strong></td>
-                <td class="text-end">{{ current_cash | sgd }}</td>
-            </tr>
-            <tr>
-                <td colspan="3" class="text-end"><strong>TOTAL</strong></td>
-                <td class="text-end">{{ total | sgd }}</td>
-            </tr>
-        </tbody>
+        <thead id="portfolio-breakdown-thead"></thead>
+        <tbody id="portfolio-breakdown-tbody"></tbody>
     </table>
 
     <div class="chart">
         <canvas id="stock-breakdown-pie"></canvas>
     </div>
 
-    <script id="stock-data" type="application/json">
-        {{ stock_data | tojson }}
-    </script>
-
-    <script>
-        const stockData = JSON.parse(document.getElementById("stock-data").textContent)
-
-        const stockLabels = stockData.map(stock => stock.symbol)
-        const stockValues = stockData.map(stock => Number(stock.total))
-        const stockBackgroundColors = stockLabels.map((_, i) => {
-            const hue = (i * 137.508) % 360;   // Golden angle
-            return `hsl(${hue}, 80%, 55%)`;
-        });
-
-        Chart.register(ChartDataLabels)
-        new Chart(document.getElementById("stock-breakdown-pie"), {
-            type: 'pie',
-            data: {
-                labels: stockLabels, 
-                datasets: [{
-                    label: "Value",
-                    data: stockValues,
-                    backgroundColor: stockBackgroundColors,
-                    borderColor: "black",
-                    borderWidth: 2, 
-                    hoverOffset: 10,
-                }]
-            }, 
-            options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            color: "white", 
-                            font: {
-                                size: 18, 
-                                weight: "bold"
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Stock Breakdown', 
-                        color: "white", 
-                        font: {
-                            size: 24
-                        }, 
-                        padding: {
-                            top: 10, 
-                            bottom: 60,
-                        }
-                    }, 
-                    datalabels: {
-                        color: "white",
-                        anchor: "end", 
-                        align: "end", 
-                        offset: 10,
-                        font: {
-                            weight: "bold", 
-                            size: 16,
-                        }, 
-                        formatter: function(value, context) {
-                            const total = stockValues.reduce((a, b) => a + b, 0)
-                            const percentage = ((value / total) * 100).toFixed(2)
-
-                            return `${percentage}%`
-                        }, 
-                    },
-                    tooltip: {
-                        callbacks: {
-                        label: function(context) {
-                            const total = stockValues.reduce((a, b) => a + b, 0)
-                            const percentage = ((context.raw / total) * 100).toFixed(2)
-
-                            return `${context.label}: $${context.raw.toLocaleString()} (${percentage}%)`
-                            }
-                        }
-                    }
-                }
-            }
-        })
-    </script>
-
-
     <div class="chart">
         <canvas id="sector-breakdown-pie"></canvas>
     </div>
 
-    <script id="sector-data" type="application/json">
-        {{ sector_data | tojson }}
-    </script>
-
     <script src="/static/js/breakdown.js"></script>
-    {% endif %}
 {% endblock %}

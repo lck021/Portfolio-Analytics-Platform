@@ -100,89 +100,97 @@ def calculate_dashboard():
         }
     })
 
+
+@app.route('/breakdown/data')
+@login_required
+def get_breakdown_data():
+    """Gets portfolio breakdown data"""
+
+    user_id = session['user_id']
+
+    portfolio_info = calculate_portfolio_value(user_id)
+    portfolio = portfolio_info["portfolio"]
+    current_cash = portfolio_info["cash_value"]
+
+    # if the user does not own any holdings
+    if len(portfolio_info["portfolio"]) == 0:
+        return jsonify({
+            "insufficient_data": True,
+            "current_cash": portfolio_info["cash_value"]})
+
+    total = portfolio_info["total_value"]
+
+    stock_data = []
+    stock_data_master = []
+    other_stock_label = []
+    other_stock_value = 0
+
+    sector_data = {}
+    sector_data_master = {}
+    other_sector_label = []
+    other_sector_value = 0
+
+    for stock in portfolio: 
+        # adds all stock data into a master list first
+        stock_data_master.append({"symbol": stock['symbol'].strip().upper(), "total": stock['total']})
+
+        # combines smaller stocks into an 'others' category
+        percentage = stock['total'] / total * 100
+
+        if percentage < 5.0:
+            other_stock_label.append(stock['symbol'])
+            other_stock_value += stock['total']
+        
+        else:
+            stock_data.append({"symbol": stock['symbol'].strip().upper(), "total": stock['total']})
+
+        # creates sectoral data and adds it into a master list first
+        sector = get_metadata(stock['symbol'])["industry"]
+        sector_data_master[sector] = sector_data_master.get(sector, 0) + stock['total']
+
+    # adds cash and others field if present to stock_data
+    if other_stock_value > 0 and len(other_stock_label) > 1:
+        stock_data.append({"symbol" : "Cash", "total": current_cash})
+        stock_data.append({"symbol": f"Others - {' '.join(other_stock_label)}", "total": other_stock_value})
+    else:
+        stock_data_master.append({"symbol" : "Cash", "total": current_cash})
+        stock_data = stock_data_master
+
+
+    # combines smaller sectors into an 'others' category
+    for sector, sector_value in sector_data_master.items():
+        percentage = sector_value / total * 100
+
+        if percentage < 5.0:
+            other_sector_label.append(sector)
+            other_sector_value += sector_value
+
+        else:
+            sector_data[sector] = sector_data.get(sector, 0) + sector_value
+
+    # adds cash and others field if present to sector data
+    if other_sector_value > 0 and len(other_sector_label) > 1:
+        sector_data["Cash"] = current_cash
+        sector_data[f"Others - {' '.join(other_sector_label)}"] = other_sector_value
+    else:
+        sector_data_master["Cash"] = current_cash
+        sector_data = sector_data_master
+
+    return jsonify({
+        "insufficient_data": False,
+        "portfolio": portfolio,
+        "current_cash": current_cash,
+        "total": total,
+        "stock_data": stock_data,
+        "sector_data": sector_data})
+
+
 @app.route('/breakdown')
 @login_required
 def breakdown():
-    """Displays portfolio breakdown"""
+    """Displays portfolio breakdown page"""
 
-    user_id = session['user_id']
-    cursor, connection = db_connect()
-    current_cash = cursor.execute("select cash from users where id=?", (session["user_id"],)).fetchone()["cash"]
-
-    try:
-        # returns a list containing dictionaries with symbol and total_share fields
-        portfolio_info = calculate_portfolio_value(user_id)
-        portfolio = portfolio_info["portfolio"]
-
-        if len(portfolio) == 0:
-            return render_template(
-                'breakdown.html',
-                insufficient_data=True,
-                current_cash=portfolio_info["cash_value"]
-            )
-
-        total = portfolio_info["total_value"]
-
-        stock_data = []
-        stock_data_master = []
-        other_stock_label = []
-        other_stock_value = 0
-
-        sector_data = {}
-        sector_data_master = {}
-        other_sector_label = []
-        other_sector_value = 0
-
-        for stock in portfolio: 
-            # adds all stock data into a master list first
-            stock_data_master.append({"symbol": stock['symbol'].strip().upper(), "total": stock['total']})
-
-            # combines smaller stocks into an 'others' category
-            percentage = stock['total'] / total * 100
-
-            if percentage < 5.0:
-                other_stock_label.append(stock['symbol'])
-                other_stock_value += stock['total']
-            
-            else:
-                stock_data.append({"symbol": stock['symbol'].strip().upper(), "total": stock['total']})
-
-            # creates sectoral data and adds it into a master list first
-            sector = get_metadata(stock['symbol'])["industry"]
-            sector_data_master[sector] = sector_data_master.get(sector, 0) + stock['total']
-
-        # adds cash and others field if present to stock_data
-        if other_stock_value > 0 and len(other_sector_label) > 1:
-            stock_data.append({"symbol" : "Cash", "total": current_cash})
-            stock_data.append({"symbol": f"Others - {' '.join(other_stock_label)}", "total": other_stock_value})
-        else:
-            stock_data_master.append({"symbol" : "Cash", "total": current_cash})
-            stock_data = stock_data_master
-
-
-        # combines smaller sectors into an 'others' category
-        for sector, sector_value in sector_data_master.items():
-            percentage = sector_value / total * 100
-
-            if percentage < 5.0:
-                other_sector_label.append(sector)
-                other_sector_value += sector_value
-
-            else:
-                sector_data[sector] = sector_data.get(sector, 0) + sector_value
-
-        # adds cash and others field if present to sector data
-        if other_sector_value > 0 and len(other_sector_label) > 1:
-            sector_data["Cash"] = current_cash
-            sector_data[f"Others - {' '.join(other_sector_label)}"] = other_sector_value
-        else:
-            sector_data_master["Cash"] = current_cash
-            sector_data = sector_data_master
-
-        return render_template('breakdown.html', portfolio=portfolio, current_cash=current_cash, total=total, stock_data=stock_data, sector_data=sector_data)
-    
-    finally:
-        connection.close()
+    return render_template('breakdown.html')
 
 
 @app.route("/sizing", methods=["GET", "POST"])

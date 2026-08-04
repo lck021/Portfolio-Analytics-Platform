@@ -20,6 +20,7 @@ body {
     width: 800px;
     aspect-ratio: 16 / 9;
     margin: 50px auto;
+    padding-bottom: 50px;
 }
 
 .page {
@@ -48,7 +49,7 @@ body {
 }
 
 /* for headers on all pages */
-.sizing-header {
+.page-header {
     margin-bottom: 1.75rem;
 }
 
