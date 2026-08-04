@@ -5,26 +5,20 @@
 {% endblock %}
 
 {% block main %}
-    <table class="table table-dark table-striped">
+    <table class="transactions-table">
         <thead>
             <tr>
-                <th class="text-start"><strong>Symbol</strong></th>
-                <th class="text-end"><strong>Shares</strong></th>
-                <th class="text-end"><strong>Price</strong></th>
-                <th class="text-end"><strong>Type</strong></th>
-                <th class="text-end"><strong>Timestamp ↓</strong></th>
+                <th>Symbol</th>
+                <th class="num">Shares</th>
+                <th class="num">Price</th>
+                <th class="num">Total</th>
+                <th>Type</th>
+                <th class="num">Timestamp ↓</th>
             </tr>
         </thead>
-        <tbody>
-            {% for stock in portfolio %}
-            <tr>
-                <td class="text-start">{{ stock['symbol'] }}</td>
-                <td class="text-end">{{ stock['shares'] }}</td>
-                <td class="text-end">{{ stock['price'] | sgd }}</td>
-                <td class="text-end">{{ stock['type'] }}</td>
-                <td class="text-end">{{ stock['time'] }}</td>
-            </tr>
-            {% endfor %}
+        <tbody id="transactions-tbody">
         </tbody>
     </table>
+
+    <script src="/static/js/history.js"></script>
 {% endblock %}

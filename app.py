@@ -459,31 +459,49 @@ def add_cash():
         connection.close()
 
 
-@app.route("/history")
+@app.route("/transactions/history/data")
 @login_required
-def history():
-    """Displays transaction history"""
+def get_transaction_history():
+    """Returns transaction history data"""
 
     cursor, connection = db_connect()
-
+    
     try:
         user_id = session['user_id']
 
         # returns a list containing dictionaries with symbol, shares, price, and time fields
         data = cursor.execute("select symbol, shares, price, time from transactions where user_id=? order by time desc", (user_id,)).fetchall()
-        portfolio = [dict(stock) for stock in data]
 
-        for stock in portfolio:  # adds cash from each stock into total, 'stock' is a dictionary
+        if len(data) == 0:
+            return jsonify({
+                "transaction_history": None
+            })
+
+        transaction_history = [dict(stock) for stock in data]
+
+        for stock in transaction_history:  # adds cash from each stock into total, 'stock' is a dictionary
             if stock['shares'] > 0:
                 stock['type'] = "BUY"
             else:
                 stock['type'] = "SELL"
 
-        return render_template('history.html', portfolio=portfolio)
+            stock['shares'] = abs(stock['shares'])
+            stock['total'] = stock['shares'] * stock['price']
+
+        return jsonify({
+            "transaction_history": transaction_history
+            })
     
     finally:
         connection.close()
 
+
+@app.route("/transactions/history")
+@login_required
+def history():
+    """Displays transaction history page"""
+
+    return render_template('history.html')
 
 
 @app.route("/login", methods=["GET", "POST"])
