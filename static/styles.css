@@ -166,6 +166,10 @@ body {
 }
 
 /* for position sizing page */
+.calculations-card {
+    border-color: #0d6efd;
+}
+
 .calculations-card h3 {
     padding-top: 0;
     padding-bottom: 0.25rem;
@@ -174,6 +178,11 @@ body {
 .sizing-page-container {
     padding: 1.25rem 0;
     border-bottom: 1px solid #26313d;
+}
+
+.sizing-heading {
+    font-size: 23px;
+    font-weight: 600;
 }
 
 .result-label {
@@ -203,6 +212,10 @@ body {
     color: #97a3b1;
 }
 
+.field-note {
+    max-width: 560px;
+}
+
 #current-price {
     color: white;
 }
@@ -222,10 +235,6 @@ body {
 
 .negative-label {
     color: var(--red-text);
-}
-
-.field-note {
-    max-width: 560px;
 }
 
 /* for quote-preview on sizing page */
@@ -262,7 +271,6 @@ body {
 }
 
 .quote-card__ticker {
-    font-family: 'SF Mono', Consolas, Menlo, monospace;
     font-weight: 700;
     font-size: 1.1rem;
     color: #e6edf3;
@@ -277,7 +285,6 @@ body {
 }
 
 .quote-card__price {
-  font-family: 'SF Mono', Consolas, Menlo, monospace;
   font-size: 2.1rem;
   font-weight: 600;
   color: #e6edf3;
@@ -285,7 +292,6 @@ body {
 }
 
 .quote-card__change {
-  font-family: 'SF Mono', Consolas, Menlo, monospace;
   font-size: 0.9rem;
   font-weight: 600;
   display: flex;
@@ -320,7 +326,6 @@ body {
 }
 
 .stat__value {
-  font-family: 'SF Mono', Consolas, Menlo, monospace;
   font-size: 1.05rem;
   color: #e6edf3;
 }
