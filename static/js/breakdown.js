@@ -32,34 +32,34 @@ async function loadBreakdown() {
 
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
-        <th class="text-start"><strong>Symbol</strong></th>
-        <th class="text-end"><strong>Shares</strong></th>
-        <th class="text-end"><strong>Price</strong></th>
-        <th class="text-end"><strong>Total</strong></th>`
+        <th>Symbol</th>
+        <th class="num">Shares</th>
+        <th class="num">Price</th>
+        <th class="num">Total</th>`
     thead.appendChild(headerRow)
 
     const tbody = document.getElementById('portfolio-breakdown-tbody')
     portfolio.forEach(stock => {
                 const row = document.createElement('tr')
                 row.innerHTML = `
-                    <td class="text-start">${stock.symbol}</td>
-                    <td class="text-end">${stock.total_shares}</td>
-                    <td class="text-end">${sgd(stock.price)}</td>
-                    <td class="text-end">${sgd(stock.total)}</td>
+                    <td>${stock.symbol}</td>
+                    <td class="num">${stock.total_shares.toLocaleString('en-US')}</td>
+                    <td class="num">${sgd(stock.price)}</td>
+                    <td class="num">${sgd(stock.total)}</td>
                 `;
                 tbody.appendChild(row)
             });
 
     const cashRow = document.createElement('tr')
     cashRow.innerHTML = `
-        <td colspan="3" class="text-end"><strong>Cash</strong></td>
-        <td class="text-end">${sgd(current_cash)}</td>`
+        <td colspan="3" class="num">Cash</td>
+        <td class="num">${sgd(current_cash)}</td>`
     tbody.appendChild(cashRow)
 
     const totalRow = document.createElement('tr')
     totalRow.innerHTML = `
-        <td colspan="3" class="text-end"><strong>TOTAL</strong></td>
-        <td class="text-end">${sgd(total)}</td>`
+        <td colspan="3" class="num"><strong>TOTAL</strong></td>
+        <td class="num"><strong>${sgd(total)}</strong></td>`
     tbody.appendChild(totalRow)
 
     // create holdings data pie chart

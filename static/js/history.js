@@ -19,7 +19,7 @@ async function loadTransactionHistory() {
         <td class="num">${Number(t.shares)}</td>
         <td class="num">${t.price.toLocaleString('en-US',{style:'currency', currency:'USD'})}</td>
         <td class="num">${t.total.toLocaleString('en-US',{style:'currency', currency:'USD'})}</td>
-        <td><span class="badge ${isSell ? "sell" : "buy"}">${t.type}</span></td>
+        <td><span class="display-table__badge ${isSell ? "sell" : "buy"}">${t.type}</span></td>
         <td class="num">${t.time}</td>`
         tbody.appendChild(row)
     })
