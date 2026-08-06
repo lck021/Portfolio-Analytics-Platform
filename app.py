@@ -208,9 +208,9 @@ def sizing():
         if request.method == "POST": # if user submitted for calculation
             # getting raw data for calculation
 
-            risk_per_trade = request.form.get("risk_per_trade")
-            entry_price = request.form.get("entry_price")
-            stop_loss = request.form.get("stop_loss")
+            risk_per_trade = request.form.get("risk_per_trade", '')
+            entry_price = request.form.get("entry_price", '')
+            stop_loss = request.form.get("stop_loss", '')
 
             if not risk_per_trade.replace(".", "", 1).isdigit() or not entry_price.replace(".", "", 1).isdigit() or not stop_loss.replace(".", "", 1).isdigit():
                 return error(400, "Bad Request", "Please provide valid inputs.")
@@ -296,7 +296,7 @@ def stock_history():
     """Obtains historical performance of a certain stock"""
 
     VALID_RANGES = {"1W", "1M", "6M", "1Y", "5Y"}
-    range_param = request.args.get("range")
+    range_param = request.args.get("range", '')
     if range_param not in VALID_RANGES:
         return error(400, "Bad Request", "Please provide a valid range.")
 
@@ -311,6 +311,50 @@ def stock_history():
     history = get_stock_history(symbol=symbol, range=range_param)
 
     return history
+
+
+@app.route("/buy/data")
+@login_required
+def get_buy_data():
+    """Calculates data needed for buy page"""
+
+    cursor, connection = db_connect()
+    symbol = request.args.get("symbol",'').strip().upper()
+
+    try:
+        if not is_valid_ticker(symbol):
+            return jsonify({
+                "valid_ticker": False
+            })
+
+        shares = request.args.get("shares", '').strip()
+
+        if not shares.isdigit():
+            return jsonify({
+                "valid_shares": False
+            })
+
+        shares = int(shares) 
+
+        if shares <= 0:
+            return jsonify({
+                "valid_shares": False
+            })
+
+        individual_cost = get_quote(symbol)["current_price"]
+        estimated_cost = shares * individual_cost
+        cash_available = cursor.execute("select cash from users where id=?", (session["user_id"],)).fetchone()["cash"]
+        remaining_cash = cash_available - estimated_cost
+
+        return jsonify({
+            "individual_cost": individual_cost,
+            "estimated_cost": estimated_cost,
+            "cash_available": cash_available,
+            "remaining_cash": remaining_cash
+        })
+
+    finally:
+        connection.close()
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -332,7 +376,7 @@ def buy():
 
             data = get_quote(symbol)
             
-            shares = request.form.get('shares') # amount of shares user wants to buy
+            shares = request.form.get('shares','') # amount of shares user wants to buy
 
             if not shares.isdigit():
                 return error(400, "Bad Request", "Please provide a valid number of shares.")
@@ -391,7 +435,7 @@ def sell():
                 return error(400, "Bad Request", f"No shares of {symbol} owned.")
 
             price = get_quote(symbol)['current_price'] # current price of stock
-            shares = request.form.get('shares')  # amount of shares user wants to sell
+            shares = request.form.get('shares', '')  # amount of shares user wants to sell
 
             if not shares.isdigit():
                 return error(400, "Bad Request", "Amount of shares must be a whole integer.")
@@ -435,7 +479,7 @@ def add_cash():
         if request.method == "POST": # if user submitted through html form
             current_cash = cursor.execute("select cash from users where id=?", (user_id,)).fetchone()['cash']
 
-            add_amount = request.form.get("add_amount")
+            add_amount = request.form.get("add_amount", '')
 
             if not add_amount:
                 return error(400, "Bad Request", "Cash field is empty.")
@@ -512,13 +556,13 @@ def login():
 
     try:
         if request.method == "POST": # if user tries to login
-            username = request.form.get("username")
-            password = request.form.get("password")
+            username = request.form.get("username", '')
+            password = request.form.get("password", '')
 
-            if not request.form.get("username"): # checks if user inputted a username
+            if not username: # checks if user inputted a username
                 return error(400, "Bad Request", "Please provide a username.")
             
-            if not request.form.get("password"): # checks if user inputted a password
+            if not password: # checks if user inputted a password
                 return error(400, "Bad Request", "Please provide a password.")
 
             cursor.execute("select * from users where username=?", (username,))
@@ -558,9 +602,9 @@ def register():
 
     try: 
         if request.method == "POST": # if user tries to register
-            username = request.form.get('username')
-            password = request.form.get('password')
-            confirmation = request.form.get('confirmation')
+            username = request.form.get('username', '')
+            password = request.form.get('password', '')
+            confirmation = request.form.get('confirmation', '')
 
             if not username or not password or not confirmation:
                 return error(400, "Bad Request", "Fill in all fields.")

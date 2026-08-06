@@ -5,29 +5,94 @@
 {% endblock %}
 
 {% block main %}
-    <form class="text-center" action="/buy" method="post">
-        <div class="container">
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Stock Symbol:</label>
+    <div class="page-header">
+        <div class="section-kicker">Trade</div>
+        <h1>Buy Stocks</h1>
+        <p class="section-copy">Search a symbol, review the live quote, and place your order.</p>
+    </div>
+
+    <div class="row g-3">
+        <!-- Left column: lookup + order form -->
+        <form class="col-lg-7" action="/buy" method="post">
+
+            <div class="panel-card">
+                <div class="quote-input-container">
+                    <input type="text" name="symbol" class="form-control" id="buy-symbol" placeholder="Enter ticker symbol (e.g. AAPL)">
+                    <button class="btn btn-primary" id="buy-lookup-btn" type="button">Quote</button>
                 </div>
-                <div class="col-4">
-                    <input class="form-control" name="symbol" placeholder="e.g. AAPL">
+
+                <!-- populate/show this once a quote is fetched -->
+                <div class="col-md-12 panel-card quote-card">
+                    <div class="quote-card__header">
+                        <span class="quote-card__ticker" id="symbol-show">[Symbol]</span>
+                    </div>
+
+                    <div class="quote-card__price-row">
+                        <span class="quote-card__price" id="current-price"></span>
+                        <div class="quote-card__change">
+                            <span class="quote-card__change--number" id="change"></span>
+                            <span class="quote-card__change--percentage" id="percent-change"></span>
+                        </div>
+                    </div>
+
+                    <div class="quote-card__stats">
+                        <div>
+                            <span class="stat__label">High</span>
+                            <span class="stat__value" id="high"></span>
+                        </div>
+                        <div>
+                            <span class="stat__label">Low</span>
+                            <span class="stat__value" id="low"></span>
+                        </div>
+                        <div>
+                            <span class="stat__label">Open</span>
+                            <span class="stat__value" id="open"></span>
+                        </div>
+                        <div>
+                            <span class="stat__label">Prev. Close</span>
+                            <span class="stat__value" id="previous-close"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Shares:</label>
-                </div>
-                <div class="col-4">
-                    <input class="form-control" name="shares" placeholder="e.g. 10">
-                </div>
-            </div>
+            <div class="panel-card">
+                <h3>Order Details</h3>
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <button class="btn btn-primary mx-auto w-auto" type="submit">Buy</button>
+                <div class="mb-3">
+                    <label class="form-label" for="buy-quantity">Quantity</label>
+                    <input name="shares" class="form-control" id="buy-quantity" placeholder="0">
+                    <div class="form-text">Number of shares to purchase</div>
+                </div>
+
+                <button class="btn btn-primary w-100" id="submit-buy" type="submit">Buy Shares</button>
+            </div>
+        </form>
+
+        <!-- Right column: order summary -->
+        <div class="col-lg-5">
+            <div class="panel-card calculations-card">
+                <h3>Order Summary</h3>
+
+                <div class="calculations-card__container">
+                    <p class="result-label">Estimated Cost</p>
+                    <p class="result-value" id="buy-stock-price"></p>
+                    <p class="result-description" id="buy-stock-total"></p>
+                </div>
+
+                <div class="calculations-card__container">
+                    <p class="result-label">Cash Available</p>
+                    <p class="result-value" id="buy-cash-available"></p>
+                </div>
+
+                <div class="calculations-card__container">
+                    <p class="result-label">Remaining After Purchase</p>
+                    <p class="result-value" id="buy-cash-remaining"></p>
+                    <span class="info-label" id="buy-info-label"></span>
+                </div>
             </div>
         </div>
-    </form>
+    </div>
+
+    <script src="/static/js/buy.js"></script>
 {% endblock %}

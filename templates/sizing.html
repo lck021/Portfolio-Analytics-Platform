@@ -28,7 +28,7 @@
                 <div class="panel-card">
                     <h2 class="sizing-heading">Inputs</h2>
                     <form action="/sizing" method="post">
-                        <div class="sizing-page-container">
+                        <div class="calculations-card__container">
                             <label class="form-label" for="risk_per_trade">Risk per trade (%)</label>
                             <input class="form-control" id="risk_per_trade" name="risk_per_trade" value="{{ risk_per_trade | default('') }}" placeholder="e.g. 1.5">
                             <div class="form-text field-note">
@@ -36,7 +36,7 @@
                             </div>
                         </div>
 
-                        <div class="sizing-page-container">
+                        <div class="calculations-card__container">
                             <label class="form-label" for="symbol">Stock symbol</label>
                             <input class="form-control" id="symbol" name="symbol" value="{{ symbol | default('') }}" placeholder="e.g. AAPL">
                             <div class="form-text field-note">
@@ -44,7 +44,7 @@
                             </div>
                         </div>
 
-                        <div class="sizing-page-container quote-preview">
+                        <div class="calculations-card__container quote-preview">
                             <label class="form-label" for="entry_price">Current Stock Price</label>
                             <span id="current-price">(Enter a symbol)</span>
                             <div class="form-text field-note">
@@ -52,7 +52,7 @@
                             </div>
                         </div>
 
-                        <div class="sizing-page-container">
+                        <div class="calculations-card__container">
                             <label class="form-label" for="entry_price">Entry price ($)</label>
                             <input class="form-control" id="entry_price" name="entry_price" value="{{ entry_price | default('') }}" placeholder="e.g. 200">
                             <div class="form-text field-note">
@@ -60,7 +60,7 @@
                             </div>
                         </div>
 
-                        <div class="sizing-page-container">
+                        <div class="calculations-card__container">
                             <label class="form-label" for="stop_loss">Stop loss ($)</label>
                             <input class="form-control" id="stop_loss" name="stop_loss" value="{{ stop_loss | default('') }}" placeholder="e.g. 190">
                             <div class="form-text field-note">
@@ -80,7 +80,7 @@
                 <div class="panel-card calculations-card">
                     <h2 class="sizing-heading">Your position size</h2>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Risk per share</p>
                         <p class="result-value">{{ risk_per_share | sgd }}</p>
                         <p class="result-description">
@@ -88,19 +88,19 @@
                         </p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Maximum dollar risk</p>
                         <p class="result-value">{{ max_dollar_risk | sgd }}</p>
                         <p class="result-description">The most this trade should lose, based on your portfolio value and risk percentage.</p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Recommended size</p>
                         <p class="result-value">{{ recommended_size }} {{"share" if recommended_size == 1 else "shares"}}</p>
                         <p class="result-description">The number of shares you can buy while staying within your maximum dollar risk.</p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Capital required</p>
                         <p class="result-value">{{ capital_required | sgd }}</p>
                         <p class="result-description">The estimated cash needed to open the recommended position.</p>
@@ -108,7 +108,7 @@
                         <span class="info-label negative-label" id="capital-negative">*Warning! You do not have sufficient cash.</span>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Portfolio allocation</p>
                         <p class="result-value">{{ portfolio_allocation }}%</p>
                         <p class="result-description">The percentage of your total portfolio that this position would use.</p>
@@ -128,7 +128,7 @@
                 <div class="panel-card calculations-card">
                     <h2 class="sizing-heading">Your position size</h2>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Risk per share</p>
                         <p class="result-value">—</p>
                         <p class="result-description">
@@ -136,31 +136,31 @@
                         </p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Maximum dollar risk</p>
                         <p class="result-value">—</p>
                         <p class="result-description">The most this trade should lose, based on your portfolio value and risk percentage.</p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Recommended size</p>
                         <p class="result-value">—</p>
                         <p class="result-description">The number of shares you can buy while staying within your maximum dollar risk.</p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Capital required</p>
                         <p class="result-value">—</p>
                         <p class="result-description">The estimated cash needed to open the recommended position.</p>
                     </div>
 
-                    <div class="sizing-page-container">
+                    <div class="calculations-card__container">
                         <p class="result-label">Portfolio allocation</p>
                         <p class="result-value">—</p>
                         <p class="result-description">The percentage of your total portfolio that this position would use.</p>
                     </div>
 
-                    <div class="formula-strip sizing-page-container">
+                    <div class="formula-strip calculations-card__container">
                         <span class="result-label">Core formula</span>
                         <code>shares = max risk ÷ (entry − stop)</code>
                     </div>
