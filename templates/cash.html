@@ -5,20 +5,47 @@
 {% endblock %}
 
 {% block main %}
-    <form class="text-center" action="/cash" method="post">
-        <div class="container">
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Cash To Add ($):</label>
+    <div class="page-header">
+        <div class="section-kicker">Account</div>
+        <h1>Add Cash</h1>
+        <p class="section-copy">Top up your account balance to place new orders.</p>
+    </div>
+
+    <div class="row g-3">
+        <!-- Left column: add cash form -->
+        <form class="col-lg-7" action="/cash" method="post">
+
+            <div class="panel-card">
+                <h3>Deposit Details</h3>
+
+                <div class="mb-3">
+                    <label class="form-label" for="cash-amount">Cash To Add ($)</label>
+                    <input class="form-control" name="cash" id="cash-amount" placeholder="e.g. 1000">
+                    <div class="form-text">Enter the amount you'd like to deposit</div>
                 </div>
-                <div class="col-4">
-                    <input class="form-control" name="cash" placeholder="e.g. 1000">
-                </div>
+
+                <button class="btn btn-primary w-100" id="submit-cash" type="submit">Add Cash</button>
             </div>
-            
-            <div class="row justify-content-center mb-3 align-items-center">
-                <button class="btn btn-primary mx-auto w-auto" type="submit">Add</button>
+        </form>
+
+        <!-- Right column: balance summary -->
+        <div class="col-lg-5">
+            <div class="panel-card calculations-card">
+                <h3>Balance Summary</h3>
+
+                <div class="calculations-card__container">
+                    <p class="result-label">Current Balance</p>
+                    <p class="result-value" id="cash-current-balance">—</p>
+                </div>
+
+                <div>
+                    <p class="result-label">New Balance</p>
+                    <p class="result-value" id="cash-new-balance">—</p>
+                    <span class="info-label" id="cash-info-label"></span>
+                </div>
             </div>
         </div>
-    </form>
+    </div>
+
+    <script src="/static/js/cash.js"></script>
 {% endblock %}

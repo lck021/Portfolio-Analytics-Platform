@@ -528,6 +528,49 @@ def sell():
         connection.close()
 
 
+@app.route("/cash/data")
+@login_required
+def get_cash_data():
+    """Calculates data needed for add cash page"""
+
+    cursor, connection = db_connect()
+    amount = request.args.get("cash", '').strip()
+
+    try:
+        current_balance = cursor.execute(
+            "select cash from users where id=?", (session["user_id"],)
+        ).fetchone()["cash"]
+
+        if not amount:
+            return jsonify({
+                "current_balance": current_balance
+            })
+
+        try:
+            amount = float(amount)
+        except ValueError:
+            return jsonify({
+                "valid_amount": False,
+                "current_balance": current_balance
+            })
+
+        if amount <= 0:
+            return jsonify({
+                "valid_amount": False,
+                "current_balance": current_balance
+            })
+
+        new_balance = current_balance + amount
+
+        return jsonify({
+            "current_balance": current_balance,
+            "new_balance": new_balance
+        })
+
+    finally:
+        connection.close()
+
+
 @app.route("/cash", methods=["GET", "POST"])
 @login_required
 def add_cash():
@@ -544,9 +587,14 @@ def add_cash():
 
             if not add_amount:
                 return error(400, "Bad Request", "Cash field is empty.")
-            
-            if not add_amount.replace(".", "", 1).isdigit():
-                    return error(400, "Bad Request", "Amount of cash must be a whole integer.")
+
+            try:
+                amount = float(amount)
+            except ValueError:
+                return error(400, "Bad Request", "Amount of cash must be a whole integer.")
+        
+            if amount <= 0:
+                return error(400, "Bad Request", "Amount of cash must be positive.")
             
             add_amount = int(add_amount)
             current_cash += add_amount
