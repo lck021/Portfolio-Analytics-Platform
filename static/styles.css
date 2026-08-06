@@ -17,7 +17,9 @@ body {
 }
 
 .chart {
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
     aspect-ratio: 16 / 9;
     margin: 50px auto;
     padding-bottom: 50px;
@@ -26,6 +28,8 @@ body {
 .page {
     max-width: 1100px;
     margin: 0 auto;
+    padding: 0 16px;
+    box-sizing: border-box;
 }
 
 /* for all input fields */
@@ -395,7 +399,7 @@ body {
     font-weight: 600;
 }
 
-/* for transaction history page */
+/* for tables */
 .display-table {
     width: 100%;
     border-collapse: collapse;
@@ -441,4 +445,10 @@ body {
 .display-table__badge.sell {
     background: var(--red-bg);
     color: var(--red-text);
+}
+
+.responsive-table {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }

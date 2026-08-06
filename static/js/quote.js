@@ -180,3 +180,9 @@ graphTypeSelector.addEventListener("change", async function () {
         loadHistory(candlestickSeries,currentSymbol,currentRange,null)
     }
 })
+
+// resizes chart if the window changes size
+window.addEventListener("resize", () => {
+    linearChart.applyOptions({ width: document.getElementById("performance-chart__linear").clientWidth })
+    candlestickChart.applyOptions({ width: document.getElementById("performance-chart__candlestick").clientWidth })
+})

@@ -89,11 +89,20 @@ async function loadBreakdown() {
         options: {
             responsive: true, 
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 10,
+                    left: 20,
+                    right: 10,
+                    bottom: 10
+                }
+            },
             plugins: {
                 legend: {
-                    position: 'right',
+                    position: 'bottom',
                     labels: {
                         color: "white", 
+                        padding: 25,
                         font: {
                             size: 18, 
                             weight: "bold"
@@ -108,10 +117,7 @@ async function loadBreakdown() {
                         size: 24
                     }, 
                     padding: {
-                        top: 20, 
                         bottom: 30,
-                        left: 10, 
-                        right: 10
                     }
                 }, 
                 datalabels: {
@@ -175,14 +181,18 @@ async function loadBreakdown() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    bottom: 30,
+                    top: 10,
+                    left: 20,
+                    right: 10,
+                    bottom: 10
                 }
             },
             plugins: {
                 legend: {
-                    position: 'right',
+                    position: 'bottom',
                     labels: {
-                        color: "white", 
+                        color: "white",
+                        padding: 25,
                         font: {
                             size: 18, 
                             weight: "bold"
@@ -197,8 +207,7 @@ async function loadBreakdown() {
                         size: 24
                     }, 
                     padding: {
-                        top: 10, 
-                        bottom: 60,
+                        bottom: 30,
                     }
                 }, 
                 datalabels: {
@@ -233,3 +242,11 @@ async function loadBreakdown() {
 }
 
 document.addEventListener("DOMContentLoaded", loadBreakdown)
+
+// resizes both charts if window changes size
+window.addEventListener("resize", () => {
+    document.getElementById("stock-breakdown-pie").applyOptions({ 
+        width: document.getElementById("stock-breakdown-pie").clientWidth })
+    document.getElementById("sector-breakdown-pie").applyOptions({ 
+        width: document.getElementById("sector-breakdown-pie").clientWidth })
+})

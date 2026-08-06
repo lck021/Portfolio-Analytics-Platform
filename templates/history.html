@@ -5,20 +5,22 @@
 {% endblock %}
 
 {% block main %}
-    <table class="display-table">
-        <thead>
-            <tr>
-                <th>Symbol</th>
-                <th class="num">Shares</th>
-                <th class="num">Price</th>
-                <th class="num">Total</th>
-                <th>Type</th>
-                <th class="num">Timestamp ↓</th>
-            </tr>
-        </thead>
-        <tbody id="transactions-tbody">
-        </tbody>
-    </table>
+    <div class="responsive-table">
+        <table class="display-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th class="num">Shares</th>
+                    <th class="num">Price</th>
+                    <th class="num">Total</th>
+                    <th>Type</th>
+                    <th class="num">Timestamp ↓</th>
+                </tr>
+            </thead>
+            <tbody id="transactions-tbody">
+            </tbody>
+        </table>
+    </div>
 
     <script src="/static/js/history.js"></script>
 {% endblock %}
