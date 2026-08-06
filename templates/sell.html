@@ -5,33 +5,63 @@
 {% endblock %}
 
 {% block main %}
-    <form class="text-center" action="/sell" method="post">
-        <div class="container">
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Stock Symbol:</label>
-                </div>
-                <div class="col-4">
-                    <select class="form-select" name="symbol">
+    <div class="page-header">
+        <div class="section-kicker">Trade</div>
+        <h1>Sell Stocks</h1>
+        <p class="section-copy">Choose a holding, enter the shares to sell, and confirm your order.</p>
+    </div>
+
+    <div class="row g-3">
+        <!-- Left column: sell form -->
+        <form class="col-lg-7" action="/sell" method="post">
+
+            <div class="panel-card">
+                <h3>Order Details</h3>
+
+                <div class="mb-3">
+                    <label class="form-label" for="sell-symbol">Stock Symbol</label>
+                    <select class="form-control" name="symbol" id="sell-symbol">
                         {% for stock in portfolio %}
-                        <option value="{{stock['symbol'] }}">{{ stock['symbol'] }}</option>
+                        <option value="{{ stock['symbol'] }}">{{ stock['symbol'] }}</option>
                         {% endfor %}
                     </select>
+                    <div class="form-text">Select a stock from your current holdings</div>
                 </div>
-            </div>
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Shares:</label>
+                <div class="mb-3">
+                    <label class="form-label" for="sell-shares">Shares</label>
+                    <input class="form-control" name="shares" id="sell-shares" placeholder="e.g. 10">
+                    <div class="form-text">Number of shares to sell</div>
                 </div>
-                <div class="col-4">
-                    <input class="form-control" name="shares" placeholder="e.g. 10">
-                </div>
-            </div>
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <button class="btn btn-primary mx-auto w-auto" type="submit">Sell</button>
+                <button class="btn btn-primary w-100" id="submit-sell" type="submit">Sell Shares</button>
+            </div>
+        </form>
+
+        <!-- Right column: order summary -->
+        <div class="col-lg-5">
+            <div class="panel-card calculations-card">
+                <h3>Order Summary</h3>
+
+                <div class="calculations-card__container">
+                    <p class="result-label">Estimated Proceeds</p>
+                    <p class="result-value" id="sell-stock-price">—</p>
+                    <p class="result-description" id="sell-stock-total"></p>
+                </div>
+
+                <div class="calculations-card__container">
+                    <p class="result-label">Shares Owned</p>
+                    <p class="result-value" id="sell-shares-owned">—</p>
+                </div>
+
+                <div>
+                    <p class="result-label">Cash After Sale</p>
+                    <p class="result-value" id="sell-cash-remaining">—</p>
+                    <span class="info-label" id="sell-info-label"></span>
+                </div>
             </div>
         </div>
-    </form>
+    </div>
+
+    <script src="/static/js/sell.js"></script>
 {% endblock %}

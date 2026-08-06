@@ -412,6 +412,67 @@ def buy():
         connection.close()
 
 
+@app.route("/sell/data")
+@login_required
+def get_sell_data():
+    """Calculates data needed for sell page"""
+
+    cursor, connection = db_connect()
+    symbol = request.args.get("symbol", '').strip().upper()
+
+    try:
+        if not is_valid_ticker(symbol):
+            return jsonify({
+                "valid_ticker": False
+            })
+
+        shares = request.args.get("shares", '').strip()
+
+        if not shares.isdigit():
+            return jsonify({
+                "valid_shares": False
+            })
+
+        shares = int(shares)
+
+        if shares <= 0:
+            return jsonify({
+                "valid_shares": False
+            })
+
+        # how many shares of this symbol the user currently owns
+        shares_owned_row = cursor.execute(
+            "select sum(shares) as total_shares from transactions where user_id=? and symbol=?",
+            (session["user_id"], symbol)
+        ).fetchone()
+
+        shares_owned = shares_owned_row["total_shares"] if shares_owned_row else 0
+
+        if shares > shares_owned:
+            return jsonify({
+                "valid_shares": False,
+                "shares_owned": shares_owned
+            })
+
+        individual_cost = get_quote(symbol)["current_price"]
+        estimated_proceeds = shares * individual_cost
+        cash_available = cursor.execute(
+            "select cash from users where id=?", (session["user_id"],)
+        ).fetchone()["cash"]
+        cash_after_sale = cash_available + estimated_proceeds
+
+        return jsonify({
+            "individual_cost": individual_cost,
+            "estimated_proceeds": estimated_proceeds,
+            "shares_owned": shares_owned,
+            "cash_available": cash_available,
+            "cash_after_sale": cash_after_sale
+        })
+
+    finally:
+        connection.close()
+
+
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
