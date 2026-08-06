@@ -1,5 +1,4 @@
 import os
-from types import MethodDescriptorType
 from dotenv import load_dotenv
 
 load_dotenv()
