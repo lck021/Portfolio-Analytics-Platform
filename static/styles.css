@@ -31,7 +31,7 @@ body {
 /* for all input fields */
 .form-control {
     width: 100%;
-    max-width: 420px;
+    box-sizing: border-box;
     border-color: #344152;
     background-color: #0f1318;
     color: white;
@@ -46,6 +46,12 @@ body {
 
 .form-control::placeholder {
     color: #738194;
+}
+
+/* for all button fields */
+.btn-width-auto {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* for headers on all pages */
@@ -87,6 +93,7 @@ body {
 
 /* for cards on all pages */
 .panel-card {
+    width: 100%;
     border: 1px solid #2a3441;
     border-radius: 0.5rem;
     background-color: #181c22;
@@ -260,7 +267,8 @@ body {
 /* for quote page */
 .quote-input-container {
     display: flex;
-    margin: 40px 0;
+    margin-top: 5px;
+    margin-bottom: 40px;
     gap: 10px;
 }
 

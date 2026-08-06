@@ -16,6 +16,9 @@
         <form class="col-lg-7" action="/buy" method="post">
 
             <div class="panel-card">
+                <h3>Stock Details</h3>
+
+                <label class="form-label" for="buy-symbol">Stock Symbol</label>
                 <div class="quote-input-container">
                     <input type="text" name="symbol" class="form-control" id="buy-symbol" placeholder="Enter ticker symbol (e.g. AAPL)">
                     <button class="btn btn-primary" id="buy-lookup-btn" type="button">Quote</button>
@@ -65,7 +68,7 @@
                     <div class="form-text">Number of shares to purchase</div>
                 </div>
 
-                <button class="btn btn-primary w-100" id="submit-buy" type="submit">Buy Shares</button>
+                <button class="btn btn-primary btn-width-auto" id="submit-buy" type="submit">Buy Shares</button>
             </div>
         </form>
 
