@@ -5,38 +5,33 @@
 {% endblock %}
 
 {% block main %}
-    <form class="text-center" action="/register" method="post">
-        <div class="container">
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Username:</label>
-                </div>
-                <div class="col-4">
-                    <input class="form-control" name="username" placeholder="Enter username">
-                </div>
-            </div>
+    <div class="page-header text-center">
+        <div class="section-kicker">Account</div>
+        <h1>Register</h1>
+        <p class="section-copy mx-auto">Create an account to start building your portfolio.</p>
+    </div>
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Password:</label>
-                </div>
-                <div class="col-4">
-                    <input class="form-control" name="password" placeholder="Enter password" type="password">
-                </div>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <form class="panel-card" action="/register" method="post">
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <div class="col-3 text-end">
-                    <label>Confirm Password:</label>
+                <div class="mb-3">
+                    <label class="form-label" for="register-username">Username</label>
+                    <input class="form-control" name="username" id="register-username" placeholder="Enter username">
                 </div>
-                <div class="col-4">
-                    <input class="form-control" name="confirmation" placeholder="Enter password again" type="password">
-                </div>
-            </div>
 
-            <div class="row justify-content-center mb-3 align-items-center">
-                <button class="btn btn-primary mx-auto w-auto" type="submit">Register</button>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label" for="register-password">Password</label>
+                    <input class="form-control" name="password" id="register-password" placeholder="Enter password" type="password">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="register-confirmation">Confirm Password</label>
+                    <input class="form-control" name="confirmation" id="register-confirmation" placeholder="Enter password again" type="password">
+                </div>
+
+                <button class="btn btn-primary w-100" type="submit">Register</button>
+            </form>
         </div>
-    </form>
+    </div>
 {% endblock %}
