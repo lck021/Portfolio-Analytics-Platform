@@ -86,6 +86,10 @@ async function loadHistory(series,symbol, range, formatter) {
     }
 }
 
+// hide candlestick chart by default, only show linear on load
+document.getElementById("performance-chart__candlestick").style.display = "none"
+document.getElementById("performance-chart__linear").style.display = "flex"
+
 // defines current values
 let currentGraphType = "linear"
 let currentRange = "1M"
