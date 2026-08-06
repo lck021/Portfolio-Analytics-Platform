@@ -187,6 +187,10 @@ body {
     border-bottom: 1px solid #26313d;
 }
 
+.panel-card .calculations-card__container:last-child {
+    border-bottom: none;
+}
+
 .sizing-heading {
     font-size: 23px;
     font-weight: 600;
