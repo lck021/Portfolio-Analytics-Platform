@@ -1,4 +1,5 @@
 Flask
 finnhub-python
+twelvedata
 gunicorn
 python-dotenv
