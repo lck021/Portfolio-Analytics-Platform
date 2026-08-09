@@ -349,6 +349,7 @@ body {
 /* for graph functonality buttons and input on quote page */
 .btn-group {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
 }
 
@@ -451,4 +452,11 @@ body {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+/* for phone screens */
+@media (max-width: 575.98px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }

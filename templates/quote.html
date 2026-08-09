@@ -32,39 +32,40 @@
         </div>
 
         <div class="row g-4 align-items-start">
-            <div class="col-md-12 panel-card quote-card">
+            <div class="col-12">
+                <div class="panel-card quote-card">
 
-                <div class="quote-card__header">
-                    <span class="quote-card__ticker" id="symbol-show">[Symbol]</span>
+                    <div class="quote-card__header">
+                        <span class="quote-card__ticker" id="symbol-show">[Symbol]</span>
+                    </div>
+
+                    <div class="quote-card__price-row">
+                        <span class="quote-card__price" id="current-price"></span>
+                        <div class="quote-card__change">
+                            <span class="quote-card__change--number" id="change"></span>
+                            <span class="quote-card__change--percentage" id="percent-change"></span>
+                        </div>
+                    </div>
+
+                    <div class="quote-card__stats">
+                        <div>
+                            <span class="stat__label">High</span>
+                            <span class="stat__value" id="high"></span>
+                        </div>
+                        <div>
+                            <span class="stat__label">Low</span>
+                            <span class="stat__value" id="low"></span>
+                        </div>
+                        <div>
+                            <span class="stat__label">Open</span>
+                            <span class="stat__value" id="open"></span>
+                        </div>
+                        <div>
+                            <span class="stat__label">Prev. Close</span>
+                            <span class="stat__value" id="previous-close"></span>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="quote-card__price-row">
-                    <span class="quote-card__price" id="current-price"></span>
-                    <div class="quote-card__change">
-                        <span class="quote-card__change--number" id="change"></span>
-                        <span class="quote-card__change--percentage" id="percent-change"></span>
-                    </div>
-                </div>
-
-                <div class="quote-card__stats">
-                    <div>
-                        <span class="stat__label">High</span>
-                        <span class="stat__value" id="high"></span>
-                    </div>
-                    <div>
-                        <span class="stat__label">Low</span>
-                        <span class="stat__value" id="low"></span>
-                    </div>
-                    <div>
-                        <span class="stat__label">Open</span>
-                        <span class="stat__value" id="open"></span>
-                    </div>
-                    <div>
-                        <span class="stat__label">Prev. Close</span>
-                        <span class="stat__value" id="previous-close"></span>
-                    </div>
-                </div>
-
             </div>
         </div>
 

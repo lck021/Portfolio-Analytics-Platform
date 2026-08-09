@@ -32,7 +32,7 @@ lookupButton.addEventListener("click", async function () {
     document.getElementById("symbol-show").textContent = symbol
     document.getElementById("current-price").textContent = `$${data.current_price}`
     document.getElementById("change").textContent = `${sign}$${Math.abs(data.change)}`
-    document.getElementById("percent-change").textContent = `(${data.percent_change}%)`
+    document.getElementById("percent-change").textContent = `(${data.percent_change.toFixed(2)}%)`
     document.getElementById("high").textContent = `${data.high}`
     document.getElementById("low").textContent = `${data.low}`
     document.getElementById("open").textContent = `${data.open}`
